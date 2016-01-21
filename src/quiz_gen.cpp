@@ -249,7 +249,6 @@ int main(int argc, char ** argv) {
 
   // Importing questions in organized database
   vector<vector <Question> > database;
-  size_t choices, choices_chk;
   for (size_t i = 0; i < db.size(); i++) {
     vector<Question> database_slot;
     for (size_t j = 0; j < db[i].size(); j++) {
@@ -264,8 +263,6 @@ int main(int argc, char ** argv) {
         }
       }
       filein.close();
-      choices = all_lines.size();
-      choices_chk += choices;
 
       vector<string> tokens;
       split(tokens, db[i][j], is_any_of(R"(/\)"), token_compress_on);
@@ -326,7 +323,7 @@ int main(int argc, char ** argv) {
   std::ofstream content(work_folder + "/exam-content_" + call.name + ".tex");
   content << "% Content of call <" << call.name << "> date " << call.date << endl << endl;
   for (auto e : call.exams) {
-    content << "% Exam with serial " << e.serial << endl;
+    content << "% Exam - serial " << e.serial << endl;
     content << "\\def\\serialnumber{" << e.serial << "}" << endl;
     content << "\\paperheader" << endl << endl << endl;
     for (size_t i = 0; i < e.questions.size(); i++) {
@@ -338,7 +335,7 @@ int main(int argc, char ** argv) {
       }
       content << endl << endl << endl;
     }
-    content << endl << R"(\paperfooter)" << endl;
+    content << endl << "\\paperfooter" << endl << endl << endl;
   }
   content.close();
 

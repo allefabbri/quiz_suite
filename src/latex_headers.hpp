@@ -98,14 +98,14 @@ string exam_form(Call call) {
 \end{center}
 \ \\
 \large
-Seriale: {\bf\Large \serialnumber} \quad Cognome: \underline{\hspace{6.9cm}} Nome: \underline{\hspace{6.3cm}}
-\\
-\\
-\\
-Firma: \underline{\hspace{17.7cm}}
+Seriale: {\bf\Large \serialnumber} \quad Cognome: \underline{\hspace{6.2cm}} Nome: \underline{\hspace{7cm}}
+
+\vspace{1cm}
 \noindent
-\\
-\\
+Firma: \underline{\hspace{17.7cm}}
+
+\vspace{1cm}
+\noindent
 )";
   double correct = call.scale / call.exams[0].questions.size(),
     wrong = -correct / (call.exams[0].questions[0].answers.size() - 1),
@@ -118,15 +118,18 @@ Firma: \underline{\hspace{17.7cm}}
 %%% Print this on each test, after the questions
 \newcommand{\paperfooter}{
 
+\vspace{1cm}
+
+\noindent
 \hrulefill
 
 \noindent
 {\small
 
 \noindent \large
-Commissione: )" << call.commission << R"( \hfill Bologna, )" << call.date << R"( \\
-\ \\
-\ \\
+Commissione: )" << call.commission << R"( \hfill Bologna, )" << call.date << R"(
+
+\vspace{0.5cm}
 \centerline{\Large \bf FOGLIO DA RICONSEGNARE!}
 }
 
