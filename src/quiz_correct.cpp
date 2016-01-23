@@ -33,7 +33,7 @@ int main(int argc, char ** argv){
     config
       << "CALL_NAME   = appello1" << endl
       << "CALL_DATE   = 17/9/1993" << endl
-      << "CLASS       = Paleontologia Applicata" << endl
+      << "COURSE      = Paleontologia Applicata" << endl
       << "TAG         = Appello I - Sessione autunnale - A.A. 1993/94" << endl
       << "CDL         = Corso di Laurea in Paleontologia" << endl
       << "COMMISSION  = Prof. A. Grant" << endl
@@ -193,6 +193,9 @@ int main(int argc, char ** argv){
   fileout.open(work_folder + "/corrections-form.tex");
   fileout << corrections_form(call);
   fileout.close();
+
+  // Command line suggestion
+  cout << "To generate the pdf please type :\ncd " << work_folder << " && pdflatex.exe corrections-form.tex && cd -" << endl;
 
   return 0;
 }

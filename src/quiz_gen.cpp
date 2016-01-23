@@ -37,7 +37,7 @@ int main(int argc, char ** argv) {
     config
     << "CALL_NAME       = appello1" << endl
     << "CALL_DATE       = 17/9/1993" << endl
-    << "CLASS           = Paleontologia Applicata" << endl
+    << "COURSE          = Paleontologia Applicata" << endl
     << "TAG             = Appello I - Sessione autunnale - A.A. 1993/94" << endl
     << "CDL             = Corso di Laurea in Paleontologia" << endl
     << "COMMISSION      = Prof. A. Grant" << endl
@@ -185,22 +185,12 @@ int main(int argc, char ** argv) {
     exit(3);
   }
 
-//  // Filling specs regex
-//  vector<vector<regex>> patterns;
-//  for( auto specs : slot_specs ){
-//    vector<regex> slot_pattern;
-//    for( auto s : specs){
-//      slot_pattern.push_back(regex(s));
-//    }
-//    patterns.push_back(slot_pattern);
-//  }
-
   // Start log file dumping
   std::ofstream log(work_folder + "/gen.log");
   log << "PARAMETERS IN USE" << endl
       << "Name            : " << call.name << endl
       << "Date            : " << call.date << endl
-      << "Course          : " << call.date << endl
+      << "Course          : " << call.course << endl
       << "Commission      : " << call.commission << endl
       << "Cdl             : " << call.cdl << endl
       << "Tag             : " << call.tag << endl
@@ -369,6 +359,9 @@ int main(int argc, char ** argv) {
   form.open(work_folder + "/database-form.tex");
   form << database_form(call);
   form.close();
+
+  // Command line suggestion
+  cout << "To generate   the pdf's please type :\ncd " << work_folder << " && for form in *-form.tex; do pdflatex.exe $form; done && cd -" << endl;
 
   return 0;
 }

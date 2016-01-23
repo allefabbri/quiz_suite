@@ -16,7 +16,7 @@ const char * latex_header = R"(
 \topmargin       0.0cm
 \headheight      0.0cm
 \footskip        0.0cm
-\parskip         0.0cm
+\parskip         2.5mm
 %%% defs
 \def \parton#1{\left( #1 \right)}                 % Parentesi tonde grandi
 \def \parqua#1{\left[ #1 \right]}                 % Parentesi quadre grandi
