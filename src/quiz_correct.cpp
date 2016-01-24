@@ -36,7 +36,6 @@ int main(int argc, char ** argv){
       << "COURSE      = Paleontologia Applicata" << endl
       << "TAG         = Appello I - Sessione autunnale - A.A. 1993/94" << endl
       << "CDL         = Corso di Laurea in Paleontologia" << endl
-      << "COMMISSION  = Prof. A. Grant" << endl
       << "WORK_FOLDER = appello1" << endl
       << "GRADES_FILE = voti.txt" << endl << endl;
     config.close();

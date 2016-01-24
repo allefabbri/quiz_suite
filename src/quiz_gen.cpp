@@ -285,7 +285,8 @@ int main(int argc, char ** argv) {
     }
     // shuffling question order
     exam.questions = r.shuffle(exam.questions);
-    // shuffling answer order and saving solutions
+    // shuffling answer order and saving 
+
     for (auto &q : exam.questions) {
       q.answers = r.shuffle(q.answers);
       for (size_t j = 0; j < q.answers.size(); j++) {
@@ -361,7 +362,7 @@ int main(int argc, char ** argv) {
   form.close();
 
   // Command line suggestion
-  cout << "To generate   the pdf's please type :\ncd " << work_folder << " && for form in *-form.tex; do pdflatex.exe $form; done && cd -" << endl;
+  cout << "To generate the pdf's please type :\ncd " << work_folder << " && for form in *-form.tex; do pdflatex.exe $form; done && cd -" << endl;
 
   return 0;
 }

@@ -150,8 +150,6 @@ int main(int argc, char ** argv){
 
 // Import SERIALS file whose layout is 
 // { serial number, question_name1, question_name2, ... , question_nameN, correct_answer }
-// but can also be ( find a way to implement ) ---------------------------------------------------------------------------
-// { serial number, correct_answer, question_name1, question_name2, ... , question_nameN }
 // into serials_v
   filein.open(work_folder+"/"+serials_name);
   if( !filein ) { 
@@ -159,13 +157,20 @@ int main(int argc, char ** argv){
     exit(5);
   }
   while( getline(filein,line) ){
-    trim(line);         
+    trim(line);
+    if (line[0] == '%') continue;
     split(tokens, line, is_any_of("\t "), token_compress_on);
     if( tokens.size() > 6 ) {   // to skip header line, if any
       call.add_serial(tokens);
     }
   }
   filein.close();
+
+// Associate to each exam its solutions
+  for (auto &exam : call.exams) {
+    exam.solutions = call.serials_map[exam.serial].first;
+  }
+
 
 // Calculating grade scales and question points
   double grade_min, grade_max, score_min, score_max;
@@ -263,7 +268,6 @@ int main(int argc, char ** argv){
 
   // Amending answers and solutions
     for( auto &exam : call.exams ){
-      exam.solutions = call.serials_map[exam.serial].first;
       if( bugs_map.find(exam.serial) != bugs_map.end() ){
         for( int i : bugs_map[exam.serial] ){
           exam.answers[i] = '-';
