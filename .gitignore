@@ -32,3 +32,10 @@
 *.pdb
 *.sdf
 *.opendb
+*.tmp
+*.iobj
+*.ipdb
+*.suo
+*.targets
+*.idb
+*.user
