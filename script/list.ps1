@@ -1,7 +1,6 @@
 $n = $args.count
 If ( $args.count -lt 3 ){
-    $scriptname = $MyInvocation.MyCommand.Name
-    Write-Host "Usage : "$MyInvocation.MyCommand.Name" input output size_of_blank"
+    "Usage : {0} input output size_of_blank" -f $MyInvocation.MyCommand.Name #printf on PS
     Exit
 }
 

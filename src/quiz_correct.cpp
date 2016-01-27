@@ -9,6 +9,13 @@
 #define MAJOR      1
 #define MINOR      0
 
+string grade2letter(vector<double> thres, int grade) {
+  if (grade < thres[0]) return "NC";
+  for (size_t i = 1; i < thres.size(); i++) {
+    if (grade < thres[i]) return to_string(char('D' - i));
+  }
+}
+
 int main(int argc, char ** argv){
   cout << "QuizCorrections v" << MAJOR << "." << MINOR << endl;
 
@@ -37,6 +44,7 @@ int main(int argc, char ** argv){
       << "TAG         = Appello I - Sessione autunnale - A.A. 1993/94" << endl
       << "CDL         = Corso di Laurea in Paleontologia" << endl
       << "WORK_FOLDER = appello1" << endl
+      << "THRESHOLDS  = 18 21 24 27 ;" << endl
       << "GRADES_FILE = voti.txt" << endl << endl;
     config.close();
     exit(-1);
@@ -46,6 +54,8 @@ int main(int argc, char ** argv){
   Call call;
   string grades_name, work_folder;
   string key, equal, value;
+  bool is_explicit = false;
+  vector<double> thresholds;
   ifstream filein(config_name);
   if( !filein ) {
     cout << "Configuration file " << config_name << " not found. Quitting..." << endl;
@@ -72,6 +82,14 @@ int main(int argc, char ** argv){
     }
     else if ( key == "WORK_FOLDER" ){
       work_folder = value;
+    }
+    else if (key == "THRESHOLDS") {
+      thresholds.push_back(atof(value.c_str()));
+      while (1) {
+        filein >> value;
+        if (value == ";") break;
+        thresholds.push_back(atof(value.c_str()));
+      }
     }
     else if ( key == "GRADES_FILE" ){
       grades_name = value;
@@ -107,10 +125,26 @@ int main(int argc, char ** argv){
     cout << "WORKING FOLDER unset. Edit " << config_name << endl;
     exit(3);
   }
+  if (thresholds.size() == 0) {
+    cout << "THRESHOLDS unset. EXPLICIT correction MODE." << endl;
+    is_explicit = true;
+  }
+  else {
+    cout << "THRESHOLDS set. IMPLICIT correction MODE." << endl;
+    cout << "NC -> [  " << fixed << setprecision(2) << 0.0 << " , " << thresholds[0] << " [ " << endl;
+    for (size_t i = 0; i < thresholds.size()-1; i++) {
+      cout << " " << char('D' - i) << " -> [ " << fixed << setprecision(2) << thresholds[i] << " , " << thresholds[i + 1] << " [ " << endl;
+    }
+    cout << " A -> [ " << thresholds.back() << " , " << 30.0 << " ] " << endl;
+    is_explicit = false;
+  }
   if (grades_name == "") {
     cout << "GRADES FILE unset. Edit " << config_name << endl;
     exit(3);
   }
+
+//  cout << 21 << " " << grade2letter(thresholds, 24.0) << endl;
+//  return 0;
 
 // Variables and container
   string line;
