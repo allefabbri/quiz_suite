@@ -248,7 +248,7 @@ int main(int argc, char ** argv) {
       filein.open(db[i][j]);
       if (!filein) log << log_counter << ") Error opening " << db[i][j] << endl; log_counter++;
       while (std::getline(filein, line)) {
-        if (line[0] != '.' && line[0] != '#') {
+        if (line[0] != '.' && line[0] != '#' && line.size() != 0) {
           all_lines.push_back(line);
         }
       }

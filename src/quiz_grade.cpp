@@ -46,7 +46,7 @@ int main(int argc, char ** argv){
     << "RESULTS         = risultati.txt" << endl
     << "GRADES          = voti.txt" << endl
     << "CHOICES         = 4" << endl
-    << "SCALE           = 30" << endl
+    << "SCORE_SCALE     = 30" << endl
     << "WORK_FOLDER     = appello1" << endl << endl;
     fileout.close();   
     exit(-1); 
@@ -55,7 +55,7 @@ int main(int argc, char ** argv){
 // Safe CONFIG file parsing
   string bugs_name, serials_name, report_basename, results_name, grade_name, work_folder;
   string key, equal, value;
-  int choices_number = -1, grading_scale = -1;
+  int choices_number = -1, score_scale = -1;
   bool is_call_bugged;
   ifstream filein(config_name);
   if( !filein ) {
@@ -81,8 +81,8 @@ int main(int argc, char ** argv){
     else if ( key == "CHOICES" ){
       choices_number = atoi(value.c_str());
     }
-    else if ( key == "SCALE" ){
-      grading_scale = atoi(value.c_str());
+    else if ( key == "SCORE_SCALE" ){
+      score_scale = atoi(value.c_str());
     }
     else if ( key == "WORK_FOLDER" ){
       work_folder = value;
@@ -102,7 +102,6 @@ int main(int argc, char ** argv){
     cout << "BUGS file set, entering BUGGED mode" << endl;    
     is_call_bugged = true;
   }
-
   if ( serials_name == "" ){
     cout << "SERIALS file unset. Edit " << config_name << endl;
     exit(3);
@@ -120,11 +119,11 @@ int main(int argc, char ** argv){
     exit(3);
   }
   if ( choices_number == -1 ){
-    cout << "CHOICES number unset. Edit " << config_name << endl;
+    cout << "CHOICES value unset. Edit " << config_name << endl;
     exit(3);
   }
-  if ( grading_scale == -1 ){
-    cout << "SCALE number unset. Edit " << config_name << endl;
+  if ( score_scale == -1 ){
+    cout << "SCORE SCALE value unset. Edit " << config_name << endl;
     exit(3);
   }
   if ( work_folder == "" ){
@@ -176,11 +175,11 @@ int main(int argc, char ** argv){
   double grade_min, grade_max, score_min, score_max;
   double correct_score, wrong_score, blank_score;
   int question_number = (int) call.exams[0].answers.size();
-  grade_max = grading_scale;
-  grade_min = -grading_scale/double(choices_number-1);
-  score_min = 0;
-  score_max = 30;
-  correct_score = grade_max/question_number;
+  score_max = score_scale;
+  score_min = -score_scale/double(choices_number-1);
+  grade_min = 0;
+  grade_max = 30;
+  correct_score = score_max/question_number;
   wrong_score   = - correct_score / ( choices_number - 1);
   blank_score   = 0.0;
 
@@ -311,7 +310,7 @@ int main(int argc, char ** argv){
     else{
       exam.score = exam.pardon_score;
     }
-    exam.grade = int(mapping(exam.pardon_score, grade_min, grade_max, score_min, score_max)+.5);   // +.5 to round to nearest integer
+    exam.grade = int(mapping(exam.pardon_score, score_min, score_max, grade_min, grade_max)+.5);   // +.5 to round to nearest integer
     if ( verbose_correction ){
       if( exam.surname == target_student ) {
         cout << "FINAL SCORE - " << fixed << setprecision(2) << setw(6) << exam.score << "\t"
@@ -325,9 +324,9 @@ int main(int argc, char ** argv){
 // Dump results to GRADES
   fileout.open(work_folder+"/"+grade_name);
   fileout << "Score range       : [ " << fixed << setprecision(2) << setw(6)
-          << grade_min << " , " << grade_max << " ]" << endl
-          << "Grade range       : [ " << fixed << setprecision(2) << setw(6)
           << score_min << " , " << score_max << " ] " << endl 
+          << "Grade range       : [ " << fixed << setprecision(2) << setw(6)
+          << grade_min << " , " << grade_max << " ]" << endl
           << "Question per exam : " << setw(2) << question_number << endl
           << "Students parsed   : " << call.exams.size() << endl
           << "Serials parsed    : " << call.serials_map.size() << endl
@@ -344,7 +343,7 @@ int main(int argc, char ** argv){
             << setw(5) << fixed << setprecision(2) << exam.score << "\t"
             << setw(5) << fixed << setprecision(2) << exam.pardon_score << "\t"
             << setw(5) << fixed << setprecision(2) << exam.pardon_score-exam.score << "\t"
-            << setw(5) << fixed << setprecision(2) << mapping(exam.pardon_score, grade_min, grade_max, score_min, score_max) << "\t"
+            << setw(5) << fixed << setprecision(2) << mapping(exam.pardon_score, score_min, score_max, grade_min, grade_max) << "\t"
             << setw(2) << exam.grade << "\t\t"
             << exam.student << endl;
   }
