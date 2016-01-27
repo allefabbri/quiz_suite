@@ -9,22 +9,15 @@
 #define MAJOR      1
 #define MINOR      0
 
-string grade2letter(vector<double> thres, int grade) {
-  if (grade < thres[0]) return "NC";
-  for (size_t i = 1; i < thres.size(); i++) {
-    if (grade < thres[i]) return to_string(char('D' - i));
-  }
-}
-
-int main(int argc, char ** argv){
+int main(int argc, char ** argv) {
   cout << "QuizCorrections v" << MAJOR << "." << MINOR << endl;
 
-// Parse command line
+  // Parse command line
   string config_name;
-  if( argc == 2 ){
+  if (argc == 2) {
     config_name = argv[1];
   }
-  else{
+  else {
     cout << "Usage: " << argv[0] << " path/to/config" << endl;
     cout << "      path/to/config must be a valid config file" << endl;
     cout << endl;
@@ -33,8 +26,8 @@ int main(int argc, char ** argv){
     exit(2);
   }
 
-// Generate empty config file and quit
-  if ( config_name == "-conf_t") {
+  // Generate empty config file and quit
+  if (config_name == "-conf_t") {
     cout << "Generating empty config file named \"correction.config\"" << endl;
     std::ofstream config("correction.config");
     config
@@ -44,24 +37,24 @@ int main(int argc, char ** argv){
       << "TAG         = Appello I - Sessione autunnale - A.A. 1993/94" << endl
       << "CDL         = Corso di Laurea in Paleontologia" << endl
       << "WORK_FOLDER = appello1" << endl
-      << "THRESHOLDS  = 18 21 24 27 ;" << endl
+      << "THRESHOLDS  = 18" << endl
       << "GRADES_FILE = voti.txt" << endl << endl;
     config.close();
     exit(-1);
   }
 
-// Safe CONFIG file parsing
+  // Safe CONFIG file parsing
   Call call;
   string grades_name, work_folder;
   string key, equal, value;
-  bool is_explicit = false;
-  vector<double> thresholds;
+  bool write_public = false;
+  double threshold = 0.0;
   ifstream filein(config_name);
-  if( !filein ) {
+  if (!filein) {
     cout << "Configuration file " << config_name << " not found. Quitting..." << endl;
     exit(3);
   }
-  while ( filein >> key >> equal >> value ){
+  while (filein >> key >> equal >> value) {
     if (key == "CALL_NAME") {
       call.name = value;
     }
@@ -80,21 +73,16 @@ int main(int argc, char ** argv){
       std::getline(filein, call.cdl);
       call.cdl = value + call.cdl;
     }
-    else if ( key == "WORK_FOLDER" ){
+    else if (key == "WORK_FOLDER") {
       work_folder = value;
     }
-    else if (key == "THRESHOLDS") {
-      thresholds.push_back(atof(value.c_str()));
-      while (1) {
-        filein >> value;
-        if (value == ";") break;
-        thresholds.push_back(atof(value.c_str()));
-      }
+    else if (key == "THRESHOLD") {
+      threshold = atof(value.c_str());
     }
-    else if ( key == "GRADES_FILE" ){
+    else if (key == "GRADES_FILE") {
       grades_name = value;
     }
-    else{
+    else {
       cout << "Key " << key << " unknown. Edit " << config_name << endl;
       exit(3);
     }
@@ -125,93 +113,82 @@ int main(int argc, char ** argv){
     cout << "WORKING FOLDER unset. Edit " << config_name << endl;
     exit(3);
   }
-  if (thresholds.size() == 0) {
-    cout << "THRESHOLDS unset. EXPLICIT correction MODE." << endl;
-    is_explicit = true;
+  if (threshold == 0.0) {
+    cout << "THRESHOLD unset. PUBLIC correction OFF" << endl;
+    write_public = false;
   }
   else {
-    cout << "THRESHOLDS set. IMPLICIT correction MODE." << endl;
-    cout << "NC -> [  " << fixed << setprecision(2) << 0.0 << " , " << thresholds[0] << " [ " << endl;
-    for (size_t i = 0; i < thresholds.size()-1; i++) {
-      cout << " " << char('D' - i) << " -> [ " << fixed << setprecision(2) << thresholds[i] << " , " << thresholds[i + 1] << " [ " << endl;
-    }
-    cout << " A -> [ " << thresholds.back() << " , " << 30.0 << " ] " << endl;
-    is_explicit = false;
+    cout << "THRESHOLDS set to " << fixed << setprecision(2) << threshold << endl;
+    write_public = true;
   }
   if (grades_name == "") {
     cout << "GRADES FILE unset. Edit " << config_name << endl;
     exit(3);
   }
 
-//  cout << 21 << " " << grade2letter(thresholds, 24.0) << endl;
-//  return 0;
-
-// Variables and container
+  // Variables and containers
   string line;
   vector<string> tokens;
 
-// Importing grades file
-  filein.open(work_folder+"/"+grades_name);
-  if( !filein ) { 
-    cout << "GRADES file " << grades_name << " not found. Quitting..." << endl; 
+  // Importing grades file
+  filein.open(work_folder + "/" + grades_name);
+  if (!filein) {
+    cout << "GRADES file " << grades_name << " not found. Quitting..." << endl;
     exit(4);
   }
-
-
-  while ( getline(filein, line) ){
+  while (getline(filein, line)) {
     trim(line);
     split(tokens, line, is_any_of("\t"), token_compress_on);
-    if ( tokens.size() > 5 ) call.exams.push_back( Exam(tokens, 'c') );
+    if (tokens.size() > 5) call.exams.push_back(Exam(tokens, 'c'));
   }
   filein.close();
 
-  
-// Filling colors vector
-  for(size_t i=0; i<call.exams.size(); i++){
-    for(size_t j=0; j<call.exams[i].answers.size(); j++){
-      if( call.exams[i].solutions[j] == '-' ){
+  // Filling colors vector
+  for (size_t i = 0; i < call.exams.size(); i++) {
+    for (size_t j = 0; j < call.exams[i].answers.size(); j++) {
+      if (call.exams[i].solutions[j] == '-') {
         call.exams[i].colors[j] = "green";
       }
-      else{
-        if( call.exams[i].answers[j] == '-' )
-          call.exams[i].colors[j] = "black"; 
-        else if( call.exams[i].answers[j] == call.exams[i].solutions[j] )
+      else {
+        if (call.exams[i].answers[j] == '-')
+          call.exams[i].colors[j] = "black";
+        else if (call.exams[i].answers[j] == call.exams[i].solutions[j])
           call.exams[i].colors[j] = "green";
         else
           call.exams[i].colors[j] = "red";
       }
     }
   }
-  
-// Dumping latex content
+
+  // Dumping latex content
   ofstream fileout;
-  fileout.open( work_folder+"/corrections-content_"+call.name+".tex" );
-  if( !fileout ){
+  fileout.open(work_folder + "/corrections-content_" + call.name + ".tex");
+  if (!fileout) {
     cout << "LATEX file not opened. Quitting..." << endl;
     exit(4);
   }
   fileout << endl;
-  for( size_t i=0; i<call.exams.size(); i++ ){
+  for (size_t i = 0; i < call.exams.size(); i++) {
     fileout << "\\paperheader" << endl;
     fileout << "Seriale: {\\bf\\Large " << call.exams[i].serial << "} \\quad Cognome e Nome: \\underline{\\Large " << call.exams[i].student << "}" << endl;
     fileout << "\\def\\spazio{1.17cm}" << endl;
     fileout << "\\begin{center}" << endl;
     fileout << "\t\\begin{tabular}{ | ";
     int row_size;
-    if( call.exams[i].answers.size()%3 == 0 )
-      row_size = (int) call.exams[i].answers.size()/3;
+    if (call.exams[i].answers.size() % 3 == 0)
+      row_size = (int)call.exams[i].answers.size() / 3;
     else
-      row_size = (int) call.exams[i].answers.size()/3 +1;
-    for(size_t j=0; j<row_size; j++) fileout << "p{\\spazio} | ";
-      fileout << "}" << endl;
+      row_size = (int)call.exams[i].answers.size() / 3 + 1;
+    for (size_t j = 0; j < row_size; j++) fileout << "p{\\spazio} | ";
+    fileout << "}" << endl;
     fileout << "\t\t\\hline" << endl;
-    for(size_t j=0; j<3*row_size; j++){
-      if( j < call.exams[i].answers.size() )
-        fileout << ( (j%row_size==0)?"\t\t":"  " ) << j+1 << " \\newline \\centerline {\\Large \\textcolor{" 
-                << call.exams[i].colors[j] << "}{" << call.exams[i].solutions[j] << "} }  " 
-                << ( ( (j+1)%row_size )?"&":"\\\\[3ex]\n\t\t\\hline\n" );
+    for (size_t j = 0; j < 3 * row_size; j++) {
+      if (j < call.exams[i].answers.size())
+        fileout << ((j%row_size == 0) ? "\t\t" : "  ") << j + 1 << " \\newline \\centerline {\\Large \\textcolor{"
+                << call.exams[i].colors[j] << "}{" << call.exams[i].solutions[j] << "} }  "
+                << (((j + 1) % row_size) ? "&" : "\\\\[3ex]\n\t\t\\hline\n");
       else
-        fileout << " \\ \\newline \\centerline \\ " << ( ( (j+1)%row_size )?"&":"\\\\[0.4cm]\n\t\t\\hline\n" );
+        fileout << " \\ \\newline \\centerline \\ " << (((j + 1) % row_size) ? "&" : "\\\\[0.4cm]\n\t\t\\hline\n");
     }
     fileout << "\t\\end{tabular}" << endl;
     fileout << "\\end{center}" << endl;
@@ -222,13 +199,58 @@ int main(int argc, char ** argv){
   }
   fileout.close();
 
-// Creating latex form
+  if (write_public) {
+    ofstream fileout;
+    fileout.open(work_folder + "/corrections-content_" + call.name + ".tex");
+    if (!fileout) {
+      cout << "LATEX file not opened. Quitting..." << endl;
+      exit(4);
+    }
+    fileout << endl;
+    for (size_t i = 0; i < call.exams.size(); i++) {
+      fileout << "\\paperheader" << endl;
+      fileout << "Seriale: {\\bf\\Large " << call.exams[i].serial << "} \\quad Cognome e Nome: \\underline{\\Large " << call.exams[i].student << "}" << endl;
+      fileout << "\\def\\spazio{1.17cm}" << endl;
+      fileout << "\\begin{center}" << endl;
+      fileout << "\t\\begin{tabular}{ | ";
+      int row_size;
+      if (call.exams[i].answers.size() % 3 == 0)
+        row_size = (int)call.exams[i].answers.size() / 3;
+      else
+        row_size = (int)call.exams[i].answers.size() / 3 + 1;
+      for (size_t j = 0; j < row_size; j++) fileout << "p{\\spazio} | ";
+      fileout << "}" << endl;
+      fileout << "\t\t\\hline" << endl;
+      for (size_t j = 0; j < 3 * row_size; j++) {
+        if (j < call.exams[i].answers.size())
+          fileout << ((j%row_size == 0) ? "\t\t" : "  ") << j + 1 << " \\newline \\centerline {\\Large \\textcolor{"
+          << call.exams[i].colors[j] << "}{" << call.exams[i].solutions[j] << "} }  "
+          << (((j + 1) % row_size) ? "&" : "\\\\[3ex]\n\t\t\\hline\n");
+        else
+          fileout << " \\ \\newline \\centerline \\ " << (((j + 1) % row_size) ? "&" : "\\\\[0.4cm]\n\t\t\\hline\n");
+      }
+      fileout << "\t\\end{tabular}" << endl;
+      fileout << "\\end{center}" << endl;
+      fileout << "Esito: {\\bf\\large " << ((double(call.exams[i].grade)<=threshold)?"Non Ammesso":"Ammesso") << "}" << endl;
+      fileout << "\n\\noindent\n\\paperfooter" << endl;
+      fileout << "\\newpage" << endl << endl << endl;
+    }
+    fileout.close();
+  }
+
+  // Creating latex forms
   fileout.open(work_folder + "/corrections-form.tex");
   fileout << corrections_form(call);
   fileout.close();
 
+  if (write_public) {
+    fileout.open(work_folder + "/public-form.tex");
+    fileout << corrections_form(call);
+    fileout.close();
+  }
+
   // Command line suggestion
-  cout << "To generate the pdf please type :\ncd " << work_folder << " && pdflatex.exe corrections-form.tex && cd -" << endl;
+  cout << "To generate the pdf's please type :\ncd " << work_folder << " && for form in *-form.tex; do pdflatex.exe $form; done && cd -" << endl;
 
   return 0;
 }
