@@ -54,8 +54,7 @@ int main(int argc, char ** argv) {
     exit(0);
   }
 
-  // Safe CONFIG file parsing
-//  string call_name, call_date, call_class, call_cdl, call_tag, call_commission,
+// Safe CONFIG file parsing
   string db_folder, work_folder;
   vector<vector<string>> slot_specs;
   int exam_number = -1, starting_serial = -1, random_seed = -1;

@@ -121,9 +121,10 @@ int main(int argc, char ** argv){
   filein.close();
 
 // Import SERIALS file
-  filein.open(work_folder+"/"+serials_name);
+  file_path = work_folder + "/" + serials_name;
+  filein.open(file_path);
   if(!filein){
-    std::cout << "SERIALS file not found. Quitting..." << std::endl;
+    std::cout << "SERIALS file " << file_path << " not found. Quitting..." << std::endl;
     exit(2);
   }
   getline(filein, line);             // here to skip header line
@@ -170,7 +171,7 @@ int main(int argc, char ** argv){
   for( auto exam : call.exams ){
     int index=-1;
     for( auto b : bin_pivot ){
-      if ( exam.grade < b ) break;
+      if ( exam.grade_d < b ) break;
       index++;
       if ( index > bin_pivot.size()-2 ) index = (int) bin_pivot.size()-2; // to include grades in the last bin
     }

@@ -1,1 +1,0 @@
-This folder will contains the build results of both MAKE and MSVC

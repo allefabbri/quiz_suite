@@ -16,3 +16,6 @@ correct: $(SRC)/quiz_correct.cpp
 
 stats: $(SRC)/quiz_stats.cpp
 	$(CXX) $(FLAGS) -o $(BIN)/quiz_stats.exe $(SRC)/quiz_stats.cpp
+
+clean:
+	rm -rf $(BIN)/*

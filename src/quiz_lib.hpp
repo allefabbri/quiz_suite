@@ -57,6 +57,7 @@ public:
         solutions = tokens[2];
         score = atof(tokens[3].c_str());
         pardon_score = atof(tokens[4].c_str());
+        grade_d = atof(tokens[6].c_str());
         grade = atoi(tokens[7].c_str());
         surname = tokens[8];
         name = tokens[9];
@@ -114,6 +115,29 @@ public:
 // QUIZ_GRADE
 double mapping( double x, double old_min, double old_max, double new_min, double new_max){
   return (x-old_min)/(old_max-old_min)*(new_max-new_min)+new_min;
+}
+
+
+// QUIZ_CORRECTIONS
+string grade2outcome(vector<double> thresholds, double grade) {
+  string outcome;
+  if (thresholds.size() == 1) {
+    // admitted / rejected
+    outcome = "size 1 coming soon";
+  }
+  else if (thresholds.size() == 2) {
+    if (grade <= thresholds[0]) outcome = "Non \\ Ammesso";
+    else if (grade <= thresholds[1]) outcome = "Ammesso \\ con \\ riserva";
+    else outcome = "Ammesso";
+  }
+  else if (thresholds.size() == 4) {
+    // a,b,c,d,nc
+    outcome = "size 4 coming soon";
+  }
+  else {
+    outcome = "size unknown coming soon";
+  }
+  return outcome;
 }
 
 

@@ -133,13 +133,18 @@ int main(int argc, char ** argv){
 
 // Variables and containers
   ofstream fileout;
-  string line;
+  string line, file_path;
   vector<string> tokens;
   map<int, vector<int> > bugs_map, healthy_map;
+  Call call;
 
 // Import RESULTS handwritten, structure { serials, answers, surname, name }
-  Call call;
-  filein.open(work_folder+"/"+results_name);
+  file_path = work_folder + "/" + results_name;
+  filein.open(file_path);
+  if (!filein) {
+    cout << "RESULTS file " << file_path << " not found. Quitting..." << endl;
+    exit(4);
+  }
   while ( getline(filein, line) ){
     trim(line);
     split(tokens, line, is_any_of("\t"), token_compress_on);
@@ -150,9 +155,10 @@ int main(int argc, char ** argv){
 // Import SERIALS file whose layout is 
 // { serial number, question_name1, question_name2, ... , question_nameN, correct_answer }
 // into serials_v
-  filein.open(work_folder+"/"+serials_name);
+  file_path = work_folder + "/" + serials_name;
+  filein.open(file_path);
   if( !filein ) { 
-    cout << "SERIALS file " << serials_name << " not found. Quitting..." << endl; 
+    cout << "SERIALS file " << file_path << " not found. Quitting..." << endl; 
     exit(5);
   }
   while( getline(filein,line) ){
@@ -187,15 +193,16 @@ int main(int argc, char ** argv){
   if( is_call_bugged ){
   // Import WRONG QUESTION list file
     vector<string> error_list;
-    filein.open(work_folder+"/"+bugs_name);
+    file_path = work_folder + "/" + bugs_name;
+    filein.open(file_path);
     if( !filein ) { 
-      cout << "BUGS file " << bugs_name << " not found. Quitting..." << endl; 
+      cout << "BUGS file " << file_path << " not found. Quitting..." << endl; 
       exit(4);
     }
     while( filein >> line ) error_list.push_back(line);
     filein.close();
 
-  // Creating the MAPS
+// Creating the MAPS
     for( auto s_it=call.serials_map.begin(); s_it != call.serials_map.end(); s_it++){
       for( int i=0; i<s_it->second.second.size(); i++ ){
         for( auto err : error_list ){
@@ -246,8 +253,9 @@ int main(int argc, char ** argv){
     }
     fileout.close();
 
-  // Dumping BUGS and HEALTHY MAP to file
-    fileout.open(work_folder+"/"+report_basename+".bugs_map");
+// Dumping BUGS and HEALTHY MAP to file
+    file_path = work_folder + "/" + report_basename + ".bugs_map";
+    fileout.open(file_path );
     fileout << "BUGGED serials  : " << bugs_map.size() 
             << " (" << fixed << setprecision(2) << bugs_map.size()/double(call.serials_map.size()) << " %)" << endl 
             << "HEALTHY serials : " << healthy_map.size()
@@ -265,7 +273,7 @@ int main(int argc, char ** argv){
     }
     fileout.close();
 
-  // Amending answers and solutions
+// Amending answers and solutions
     for( auto &exam : call.exams ){
       if( bugs_map.find(exam.serial) != bugs_map.end() ){
         for( int i : bugs_map[exam.serial] ){
@@ -310,7 +318,8 @@ int main(int argc, char ** argv){
     else{
       exam.score = exam.pardon_score;
     }
-    exam.grade = int(mapping(exam.pardon_score, score_min, score_max, grade_min, grade_max)+.5);   // +.5 to round to nearest integer
+    exam.grade_d = mapping(exam.pardon_score, score_min, score_max, grade_min, grade_max);
+    exam.grade = int(exam.grade_d+.5);   // +.5 to round to nearest integer
     if ( verbose_correction ){
       if( exam.surname == target_student ) {
         cout << "FINAL SCORE - " << fixed << setprecision(2) << setw(6) << exam.score << "\t"
@@ -324,7 +333,7 @@ int main(int argc, char ** argv){
 // Dump results to GRADES
   fileout.open(work_folder+"/"+grade_name);
   fileout << "Score range       : [ " << fixed << setprecision(2) << setw(6)
-          << score_min << " , " << score_max << " ] " << endl 
+          << score_min << " , " << score_max << " ]" << endl 
           << "Grade range       : [ " << fixed << setprecision(2) << setw(6)
           << grade_min << " , " << grade_max << " ]" << endl
           << "Question per exam : " << setw(2) << question_number << endl
@@ -343,7 +352,7 @@ int main(int argc, char ** argv){
             << setw(5) << fixed << setprecision(2) << exam.score << "\t"
             << setw(5) << fixed << setprecision(2) << exam.pardon_score << "\t"
             << setw(5) << fixed << setprecision(2) << exam.pardon_score-exam.score << "\t"
-            << setw(5) << fixed << setprecision(2) << mapping(exam.pardon_score, score_min, score_max, grade_min, grade_max) << "\t"
+            << setw(5) << fixed << setprecision(2) << exam.grade_d << "\t"
             << setw(2) << exam.grade << "\t\t"
             << exam.student << endl;
   }

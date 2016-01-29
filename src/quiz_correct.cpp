@@ -9,27 +9,6 @@
 #define MAJOR      1
 #define MINOR      0
 
-string grade2outcome(vector<double> thresholds, double grade) {
-  string outcome;
-  if (thresholds.size() == 1) {
-    // admitted / rejected
-    outcome = "size 1 coming soon";
-  }
-  else if (thresholds.size() == 2) {
-    if (grade <= thresholds[0]) outcome = "Non \\ Ammesso";
-    else if (grade <= thresholds[1]) outcome = "Ammesso \\ con \\ riserva";
-    else outcome = "Ammesso";
-  }
-  else if (thresholds.size() == 4) {
-    // a,b,c,d,nc
-    outcome = "size 4 coming soon";
-  }
-  else {
-    outcome = "size unknown coming soon";
-  }
-  return outcome;
-}
-
 int main(int argc, char ** argv) {
   cout << "QuizCorrections v" << MAJOR << "." << MINOR << endl;
 
@@ -158,13 +137,14 @@ int main(int argc, char ** argv) {
   }
 
   // Variables and containers
-  string line;
+  string line, file_path;
   vector<string> tokens;
 
   // Importing grades file
-  filein.open(work_folder + "/" + grades_name);
+  file_path = work_folder + "/" + grades_name;
+  filein.open(file_path);
   if (!filein) {
-    cout << "GRADES file " << grades_name << " not found. Quitting..." << endl;
+    cout << "GRADES file " << file_path << " not found. Quitting..." << endl;
     exit(4);
   }
   while (getline(filein, line)) {
@@ -231,7 +211,6 @@ int main(int argc, char ** argv) {
   fileout.close();
 
   if (write_public) {
-    ofstream fileout;
     fileout.open(work_folder + "/public-content_" + call.name + ".tex");
     if (!fileout) {
       cout << "LATEX file not opened. Quitting..." << endl;
