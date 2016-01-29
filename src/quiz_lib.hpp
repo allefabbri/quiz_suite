@@ -21,7 +21,7 @@ public:
   vector<Question> questions;                               // for generating
   string answers, solutions, name, surname, student;        // for grading
   int grade;                                                // for grading/corrections
-  double score, pardon_score;                               // for grading/corrections
+  double score, pardon_score, grade_d;                      // for grading/corrections
   vector<string> colors;                                    // for corrections
   Exam(){};
   Exam( vector<string> tokens, char mode){
@@ -32,6 +32,7 @@ public:
         answers = tokens[1];
         solutions = tokens[2];
         pardon_score = atof(tokens[4].c_str());
+        grade_d = atof(tokens[6].c_str());
         grade = atoi(tokens[7].c_str());
         surname = tokens[8];
         name = tokens[9];

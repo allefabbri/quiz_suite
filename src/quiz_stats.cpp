@@ -98,18 +98,19 @@ int main(int argc, char ** argv){
   }
 
 // Variables and containers
-  string line;
+  string line, file_path;
   vector<string> tokens;
   map<string, Question_param> question_map;
-  map<int, vector<string> > serials_map;
-  int exam_number = 0, pad_name = 0;
+  int exam_number = 0;
+  size_t pad_name = 0;
   map<int, int> pardon_bins;
+  Call call;
 
 // Import GRADES file
-  Call call;
-  filein.open( work_folder+"/"+grades_name );
+  file_path = work_folder + "/" + grades_name;
+  filein.open( file_path );
   if( !filein ) { 
-    cout << "GRADES file " << grades_name << " not found. Quitting..." << endl; 
+    cout << "GRADES file " << file_path << " not found. Quitting..." << endl;
     exit(4);
   }
   while ( getline(filein, line) ){
@@ -127,12 +128,9 @@ int main(int argc, char ** argv){
   }
   getline(filein, line);             // here to skip header line
   while( getline(filein, line) ){
-    trim_if(line, boost::is_any_of(" "));
-    split(tokens, line, boost::is_any_of(" "), boost::token_compress_on);
-    for(size_t i=1; i<tokens.size()-1; i++){
-      if( tokens[i].size()>pad_name ) pad_name = (int) tokens[i].size();
-      serials_map[atoi(tokens[0].c_str())].push_back(tokens[i]);
-    }
+    trim_if(line, boost::is_any_of(" \t"));
+    if (line[0] == '%') continue;
+    split(tokens, line, boost::is_any_of("\t "), boost::token_compress_on);
     call.add_serial(tokens);
   }
   filein.close();
@@ -140,15 +138,17 @@ int main(int argc, char ** argv){
 // Evaluate stats
   for( auto exam : call.exams ){    
     for( int i=0; i<exam.answers.size(); i++){      
-      question_map[ call.serials_map[exam.serial].second[i] ].repetitions++;
+      string question_name = call.serials_map[exam.serial].second[i];
+      if (pad_name < question_name.size()) pad_name = question_name.size();
+      question_map[question_name].repetitions++;
       if ( exam.answers[i] == '-' ){
-        question_map[ call.serials_map[exam.serial].second[i] ].blank++;
+        question_map[question_name].blank++;
       }
       else if ( exam.answers[i] == exam.solutions[i] ){
-        question_map[ call.serials_map[exam.serial].second[i] ].correct++;
+        question_map[question_name].correct++;
       }
       else{
-        question_map[ call.serials_map[exam.serial].second[i] ].wrong ++;
+        question_map[question_name].wrong ++;
       }
     }
     pardon_bins[ (int) round(exam.pardon_score - exam.score) ]++;

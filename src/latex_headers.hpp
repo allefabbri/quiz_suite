@@ -205,3 +205,44 @@ string corrections_form(Call call) {
 
   return ss.str();
 }
+
+string public_form(Call call) {
+  stringstream ss;
+  ss << latex_header << endl;
+  ss << R"(%%% Print this on each test, before the questions
+\newcommand{\paperheader}{
+%\newpage
+%\thispagestyle{empty}
+%\mbox{}
+%\newpage
+%
+\begin{center}
+\LARGE
+{\sc )" << call.course << R"(}\\
+\Large)" << call.date << " - " << call.tag << R"(\\)" << endl
+<< call.cdl << R"(\\
+\end{center}
+}
+)";
+
+  ss << R"(
+%%% Print this on each test, after the questions
+\newcommand{\paperfooter}{LEGENDA: 
+
+\textcolor{green}{Risposta corretta} 
+
+\textcolor{red}{Risposta errata} 
+
+\textcolor{black}{Risposta mancante}  
+}
+
+)";
+
+  ss << R"(%%% Now read in the actual tests
+\input public-content_)" << call.name << R"(.tex
+
+\end{document}
+)";
+
+  return ss.str();
+}

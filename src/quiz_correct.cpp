@@ -9,6 +9,27 @@
 #define MAJOR      1
 #define MINOR      0
 
+string grade2outcome(vector<double> thresholds, double grade) {
+  string outcome;
+  if (thresholds.size() == 1) {
+    // admitted / rejected
+    outcome = "size 1 coming soon";
+  }
+  else if (thresholds.size() == 2) {
+    if (grade <= thresholds[0]) outcome = "Non \\ Ammesso";
+    else if (grade <= thresholds[1]) outcome = "Ammesso \\ con \\ riserva";
+    else outcome = "Ammesso";
+  }
+  else if (thresholds.size() == 4) {
+    // a,b,c,d,nc
+    outcome = "size 4 coming soon";
+  }
+  else {
+    outcome = "size unknown coming soon";
+  }
+  return outcome;
+}
+
 int main(int argc, char ** argv) {
   cout << "QuizCorrections v" << MAJOR << "." << MINOR << endl;
 
@@ -37,7 +58,7 @@ int main(int argc, char ** argv) {
       << "TAG         = Appello I - Sessione autunnale - A.A. 1993/94" << endl
       << "CDL         = Corso di Laurea in Paleontologia" << endl
       << "WORK_FOLDER = appello1" << endl
-      << "THRESHOLDS  = 18" << endl
+      << "THRESHOLDS  = 16 18 ;" << endl
       << "GRADES_FILE = voti.txt" << endl << endl;
     config.close();
     exit(-1);
@@ -48,7 +69,7 @@ int main(int argc, char ** argv) {
   string grades_name, work_folder;
   string key, equal, value;
   bool write_public = false;
-  double threshold = 0.0;
+  vector<double> thresholds;
   ifstream filein(config_name);
   if (!filein) {
     cout << "Configuration file " << config_name << " not found. Quitting..." << endl;
@@ -76,8 +97,13 @@ int main(int argc, char ** argv) {
     else if (key == "WORK_FOLDER") {
       work_folder = value;
     }
-    else if (key == "THRESHOLD") {
-      threshold = atof(value.c_str());
+    else if (key == "THRESHOLDS") {
+      thresholds.push_back(atof(value.c_str()));
+      while (1) {
+        filein >> value;
+        if (value == ";") break;
+        thresholds.push_back(atof(value.c_str()));
+      }
     }
     else if (key == "GRADES_FILE") {
       grades_name = value;
@@ -113,12 +139,17 @@ int main(int argc, char ** argv) {
     cout << "WORKING FOLDER unset. Edit " << config_name << endl;
     exit(3);
   }
-  if (threshold == 0.0) {
-    cout << "THRESHOLD unset. PUBLIC correction OFF" << endl;
+  if (thresholds.size() == 0) {
+    cout << "PUBLIC mode OFF. THRESHOLDS unset." << endl;
     write_public = false;
   }
   else {
-    cout << "THRESHOLDS set to " << fixed << setprecision(2) << threshold << endl;
+    cout << "PUBLIC mode ON. THRESHOLDS set to " << endl;
+    cout << "Range 1  ->  [  " << fixed << setprecision(2) << 0.0 << " , " << thresholds[0] << " [ " << endl;
+    for (size_t i = 0; i < thresholds.size() - 1; i++) {
+      cout << "Range " << i+2 << "  ->  [ " << fixed << setprecision(2) << thresholds[i] << " , " << thresholds[i + 1] << " [ " << endl;
+    }
+    cout << "Range " << thresholds.size()+1 << "  ->  [ " << thresholds.back() << " , " << 30.0 << " ] " << endl << endl;
     write_public = true;
   }
   if (grades_name == "") {
@@ -201,7 +232,7 @@ int main(int argc, char ** argv) {
 
   if (write_public) {
     ofstream fileout;
-    fileout.open(work_folder + "/corrections-content_" + call.name + ".tex");
+    fileout.open(work_folder + "/public-content_" + call.name + ".tex");
     if (!fileout) {
       cout << "LATEX file not opened. Quitting..." << endl;
       exit(4);
@@ -231,7 +262,7 @@ int main(int argc, char ** argv) {
       }
       fileout << "\t\\end{tabular}" << endl;
       fileout << "\\end{center}" << endl;
-      fileout << "Esito: {\\bf\\large " << ((double(call.exams[i].grade)<=threshold)?"Non Ammesso":"Ammesso") << "}" << endl;
+      fileout << "Esito: {\\Large \\boxed{ \\bf " << grade2outcome(thresholds, call.exams[i].grade_d) << " } } " << endl;
       fileout << "\n\\noindent\n\\paperfooter" << endl;
       fileout << "\\newpage" << endl << endl << endl;
     }
@@ -245,7 +276,7 @@ int main(int argc, char ** argv) {
 
   if (write_public) {
     fileout.open(work_folder + "/public-form.tex");
-    fileout << corrections_form(call);
+    fileout << public_form(call);
     fileout.close();
   }
 
