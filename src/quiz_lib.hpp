@@ -119,8 +119,7 @@ double mapping( double x, double old_min, double old_max, double new_min, double
 
 
 // QUIZ_CORRECTIONS
-string grade2outcome(vector<double> thresholds, double grade_d) {
-  int grade = int(grade_d + 0.5);
+string grade2outcome(vector<double> thresholds, double grade) {
   string outcome;
   if (thresholds.size() == 1) {
     // admitted / rejected
