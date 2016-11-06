@@ -11,7 +11,7 @@
 using namespace boost::filesystem;
 
 #define MAJOR_VERSION          1
-#define MINOR_VERSION          0
+#define MINOR_VERSION          1
 
 int main(int argc, char ** argv) {
   cout << "QuizGenerator v" << MAJOR_VERSION << "." << MINOR_VERSION << endl;
@@ -35,26 +35,26 @@ int main(int argc, char ** argv) {
     cout << "Generating empty config file named \"gen.config\"" << endl;
     std::ofstream config("gen.config");
     config
-    << "CALL_NAME       = appello1" << endl
-    << "CALL_DATE       = 17/9/1993" << endl
-    << "COURSE          = Paleontologia Applicata" << endl
-    << "TAG             = Appello I - Sessione autunnale - A.A. 1993/94" << endl
-    << "CDL             = Corso di Laurea in Paleontologia" << endl
-    << "COMMISSION      = Prof. A. Grant" << endl
-    << "EXAM_NUMBER     = 15" << endl
-    << "SLOT1           = regex1.1-* regex1.2-* ;" << endl
-    << "[...]" << endl
-    << "SLOTn           = regexn.1-* regexn.2-* ;" << endl
-    << "STARTING_SERIAL = 1" << endl
-    << "RANDOM_SEED     = 1010" << endl
-    << "SCALE           = 30" << endl
-    << "WORK_FOLDER     = appello1" << endl
-    << "DATABASE_FOLDER = database" << endl << endl;
+      << "CALL_NAME       = appello1" << endl
+      << "CALL_DATE       = 17/9/1993" << endl
+      << "COURSE          = Paleontologia Applicata" << endl
+      << "TAG             = Appello I - Sessione autunnale - A.A. 1993/94" << endl
+      << "CDL             = Corso di Laurea in Paleontologia" << endl
+      << "COMMISSION      = Prof. A. Grant" << endl
+      << "EXAM_NUMBER     = 15" << endl
+      << "SLOT1           = regex1.1-* regex1.2-* ;" << endl
+      << "[...]" << endl
+      << "SLOTn           = regexn.1-* regexn.2-* ;" << endl
+      << "STARTING_SERIAL = 1" << endl
+      << "RANDOM_SEED     = 1010" << endl
+      << "SCALE           = 30" << endl
+      << "WORK_FOLDER     = appello1" << endl
+      << "DATABASE_FOLDER = database" << endl << endl;
     config.close();
     exit(0);
   }
 
-// Safe CONFIG file parsing
+  // Safe CONFIG file parsing
   string db_folder, work_folder;
   vector<vector<string>> slot_specs;
   int exam_number = -1, starting_serial = -1, random_seed = -1;
@@ -91,15 +91,15 @@ int main(int argc, char ** argv) {
     else if (key == "EXAM_NUMBER") {
       exam_number = atoi(value.c_str());
     }
-    else if (key.substr(0,4) == "SLOT" ){
+    else if (key.substr(0, 4) == "SLOT") {
       vector<string> specs;
-      specs.push_back( value );
-      while( 1 ){
+      specs.push_back(value);
+      while (true) {
         filein >> value;
-        if( value == ";" ) break;
-        specs.push_back( value );
+        if (value == ";") break;
+        specs.push_back(value);
       }
-      slot_specs.push_back( specs );
+      slot_specs.push_back(specs);
     }
     else if (key == "STARTING_SERIAL") {
       starting_serial = atoi(value.c_str());
@@ -155,9 +155,9 @@ int main(int argc, char ** argv) {
     cout << "SPECS unset. Edit " << config_name << endl;
     exit(3);
   }
-  else{
-    for( auto spec : slot_specs ){
-      if( spec.size() == 0 ){
+  else {
+    for (auto spec : slot_specs) {
+      if (spec.size() == 0) {
         cout << "SLOT_SPEC is empty. Edit " << config_name << endl;
         exit(3);
       }
@@ -187,18 +187,18 @@ int main(int argc, char ** argv) {
   // Start log file dumping
   std::ofstream log(work_folder + "/gen.log");
   log << "PARAMETERS IN USE" << endl
-      << "Name            : " << call.name << endl
-      << "Date            : " << call.date << endl
-      << "Course          : " << call.course << endl
-      << "Commission      : " << call.commission << endl
-      << "Cdl             : " << call.cdl << endl
-      << "Tag             : " << call.tag << endl
-      << "Starting serial : " << starting_serial << endl
-      << "Random seed     : " << random_seed << endl
-      << "Grading scale   : " << fixed << setprecision(2) << call.scale << endl
-      << "Working folder  : " << work_folder << endl
-      << "Database folder : " << db_folder << endl << endl << endl
-      << "OPERATIONS PERFORMED" << endl;
+    << "Name            : " << call.name << endl
+    << "Date            : " << call.date << endl
+    << "Course          : " << call.course << endl
+    << "Commission      : " << call.commission << endl
+    << "Cdl             : " << call.cdl << endl
+    << "Tag             : " << call.tag << endl
+    << "Starting serial : " << starting_serial << endl
+    << "Random seed     : " << random_seed << endl
+    << "Grading scale   : " << fixed << setprecision(2) << call.scale << endl
+    << "Working folder  : " << work_folder << endl
+    << "Database folder : " << db_folder << endl << endl << endl
+    << "OPERATIONS PERFORMED" << endl;
 
   // Browsing database
   path p(db_folder);
@@ -210,42 +210,56 @@ int main(int argc, char ** argv) {
         log << log_counter << ") Entering database directory : " << p << endl; log_counter++;
         for (directory_iterator it(p), end; it != end; it++) {
           log << log_counter << ") Analyzing question : " << it->path().filename() << endl; log_counter++;
-          for( size_t i=0; i<slot_specs.size(); i++){
-            for( auto patt : slot_specs[i] ){
+          for (size_t i = 0; i < slot_specs.size(); i++) {
+            for (auto patt : slot_specs[i]) {
               regex r(patt);
-              if( std::regex_search(it->path().filename().generic_string(),r) ){
-                log << log_counter << ") Question " << it->path().filename() << " matches \"" << patt << "\", stored in SLOT" << i+1 << endl; log_counter++;
+              if (std::regex_search(it->path().filename().generic_string(), r)) {
+                log << log_counter << ") Question " << it->path().filename() << " matches \"" << patt << "\", stored in SLOT" << i + 1 << endl; log_counter++;
                 db[i].push_back(it->path().generic_string());
-              }              
+              }
             }
           }
         }
       }
+      else {
+        log << log_counter << ") Database folder is not a directory : " << p << endl; log_counter++;
+        exit(66);
+      }
+    }
+    else {
+      log << log_counter << ") Database directory not found : " << p << endl; log_counter++;
+      exit(6);
     }
   }
   catch (const filesystem_error &ex) {
     cout << ex.what() << endl;
   }
 
-  // Sorting names and database size
+  // Sorting names, database size, safety size check loop
   log << log_counter << ") Sorting database names " << endl; log_counter++;
-  sort(db.begin(), db.end());
   size_t database_size = 0;
-  for (auto &s : db) {
-    database_size += s.size();
-    sort(s.begin(), s.end());
+  for (size_t i = 0; i < db.size(); ++i) {
+    if (db[i].size() == 0) {
+      log << log_counter << ") Unable to populate slot #" << i+1 << endl; log_counter++;
+      exit(7);
+    }
+    database_size += db[i].size();
+    sort(db[i].begin(), db[i].end());
   }
 
   // Importing questions in organized database
   vector<vector <Question> > database;
-  for (size_t i = 0; i < db.size(); i++) {
+  for (size_t i = 0; i < db.size(); ++i) {
     vector<Question> database_slot;
     for (size_t j = 0; j < db[i].size(); j++) {
       string line;
       vector<string> all_lines;
       log << log_counter << ") Importing question : " << db[i][j] << endl; log_counter++;
       filein.open(db[i][j]);
-      if (!filein) log << log_counter << ") Error opening " << db[i][j] << endl; log_counter++;
+      if (!filein) {
+        log << log_counter << ") Error opening : " << db[i][j] << endl;
+        log_counter++;
+      }
       while (std::getline(filein, line)) {
         if (line[0] != '.' && line[0] != '#' && line.size() != 0 && line != "\n") {
           all_lines.push_back(line);
@@ -285,7 +299,6 @@ int main(int argc, char ** argv) {
     // shuffling question order
     exam.questions = r.shuffle(exam.questions);
     // shuffling answer order and saving 
-
     for (auto &q : exam.questions) {
       q.answers = r.shuffle(q.answers);
       for (size_t j = 0; j < q.answers.size(); j++) {
@@ -338,7 +351,7 @@ int main(int argc, char ** argv) {
     content << "\\subsection*{Slot " << i + 1 << "/" << database.size() << " , size " << database[i].size() << "}" << endl << endl;
     for (auto q : database[i]) {
       content << "\\noindent" << endl
-      << "{\\large \\textbf{" << all_counter << "} - }{\\tt [" << q.name << "]}" << q.text << endl << endl;
+        << "{\\large \\textbf{" << all_counter << "} - }{\\tt [" << q.name << "]}" << q.text << endl << endl;
       for (size_t j = 0; j < q.answers.size(); j++) {
         content << "{$" << char('A' + j) << "$}: " << q.answers[j].first << endl << "\\ \\" << endl;
       }
