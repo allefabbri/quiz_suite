@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quiz_gen", "quiz_gen\quiz_gen.vcxproj", "{9E6B3A6C-B649-4484-965D-DABEDE620C34}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quiz_correct", "quiz_correct\quiz_correct.vcxproj", "{24CF9981-B5C6-4C24-A68C-3CE35F01EB3D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quiz_stats", "quiz_stats\quiz_stats.vcxproj", "{D3E2E522-5462-4322-AE81-E8E977DE2191}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quiz_query", "quiz_query\quiz_query.vcxproj", "{2E7B00EA-8526-4FF3-9E0D-0D8985299639}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,14 @@ Global
 		{D3E2E522-5462-4322-AE81-E8E977DE2191}.Release|x64.Build.0 = Release|x64
 		{D3E2E522-5462-4322-AE81-E8E977DE2191}.Release|x86.ActiveCfg = Release|Win32
 		{D3E2E522-5462-4322-AE81-E8E977DE2191}.Release|x86.Build.0 = Release|Win32
+		{2E7B00EA-8526-4FF3-9E0D-0D8985299639}.Debug|x64.ActiveCfg = Debug|x64
+		{2E7B00EA-8526-4FF3-9E0D-0D8985299639}.Debug|x64.Build.0 = Debug|x64
+		{2E7B00EA-8526-4FF3-9E0D-0D8985299639}.Debug|x86.ActiveCfg = Debug|Win32
+		{2E7B00EA-8526-4FF3-9E0D-0D8985299639}.Debug|x86.Build.0 = Debug|Win32
+		{2E7B00EA-8526-4FF3-9E0D-0D8985299639}.Release|x64.ActiveCfg = Release|x64
+		{2E7B00EA-8526-4FF3-9E0D-0D8985299639}.Release|x64.Build.0 = Release|x64
+		{2E7B00EA-8526-4FF3-9E0D-0D8985299639}.Release|x86.ActiveCfg = Release|Win32
+		{2E7B00EA-8526-4FF3-9E0D-0D8985299639}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

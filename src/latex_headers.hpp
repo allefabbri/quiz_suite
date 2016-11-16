@@ -18,12 +18,12 @@ const char * latex_header = R"(
 \footskip        0.0cm
 \parskip         2.5mm
 %%% defs
-\def \parton#1{\left( #1 \right)}                 % Parentesi tonde grandi
-\def \parqua#1{\left[ #1 \right]}                 % Parentesi quadre grandi
-\def \pargra#1{\left\{ #1 \right\}}                 % Parentesi graffe grandi
-\def \mod#1{\left| #1 \right|}                             % Modulo grande
-\def \der#1#2{\frac{d #1}{d #2}}                           % Derivata df/dx
-\def \pder#1#2{\frac{\partial #1}{\partial #2}}            % Derivata parziale
+\def \parton#1{\left( #1 \right)}                   % Adaptive round brackets
+\def \parqua#1{\left[ #1 \right]}                   % Adaptive square brackets
+\def \pargra#1{\left\{ #1 \right\}}                 % Adaptive curly brackets
+\def \mod#1{\left| #1 \right|}                      % Adaptive modulus
+\def \der#1#2{\frac{d #1}{d #2}}                    % Ordinary derivative df/dx
+\def \pder#1#2{\frac{\partial #1}{\partial #2}}     % Partial derivative
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
