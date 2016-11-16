@@ -4,9 +4,6 @@
 
 #include "quiz_lib.hpp"
 
-using namespace std;
-
-
 // quiz_query -[s|r] [filename] [PARAMS]
 
 void usage(char* progname){
