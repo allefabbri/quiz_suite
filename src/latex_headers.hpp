@@ -1,4 +1,3 @@
-#include <iomanip>
 #include <sstream>
 
 #include "quiz_lib.hpp"

@@ -1,6 +1,3 @@
-#define _SCL_SECURE_NO_WARNINGS
-
-
 #include "quiz_lib.hpp"
 
 #define MAJOR     1

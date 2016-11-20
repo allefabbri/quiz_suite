@@ -1,5 +1,3 @@
-#define _SCL_SECURE_NO_WARNINGS
-
 #include "latex_headers.hpp"
 
 #define MAJOR      1

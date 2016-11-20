@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "quiz_lib.hpp"
 
 void usage(char* progname) {
