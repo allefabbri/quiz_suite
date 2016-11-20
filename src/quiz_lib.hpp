@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <random>
 #include <map>
 
@@ -7,7 +8,8 @@
 using namespace std;
 using namespace boost::algorithm;
 
-// GENERAL
+
+/////////////////////////////// QUESTION class
 class Question{
 public:
   string path, name;
@@ -15,6 +17,8 @@ public:
   vector<pair<string, int> > answers;
 };
 
+
+/////////////////////////////// EXAM class
 class Exam{
 public:
   int serial;                                               // for generating/grading/corrections
@@ -71,23 +75,45 @@ public:
   }
 };
 
+
+/////////////////////////////// CALL class
 class Call{
 public:
+  // Vars and containers
   string name;                                              // general purpose
   string date, course, tag, cdl, commission;                // for latex headers
   double scale;
   vector<Exam> exams;
   map<int, pair<string, vector<string> > > serials_map;     // { serial, { solutions, {questions names, ...} } }
+
+  // Methods
   void add_serial( vector<string> tokens ){
     serials_map[atoi(tokens[0].c_str())].first = tokens.back();
     for( int i = 1; i<tokens.size()-1; i++){
       serials_map[atoi(tokens[0].c_str())].second.push_back( tokens[i] );
     }
   }
+  void parse_serial(string filename) {
+    ifstream filein(filename);
+    if (!filein) {
+      cout << "SERIALS file " << filename << " not found. Quitting..." << endl;
+      exit(5);
+    }
+    string line;
+    vector<string> tokens;
+    while (getline(filein, line)) {
+      trim(line);
+      if (line[0] == '%') continue;
+      split(tokens, line, is_any_of("\t "), token_compress_on);
+      if (tokens.size() > 6) {   // to skip segfault causing lines, if any
+        this->add_serial(tokens);
+      }
+    }
+    filein.close();
+  }
 };
 
-
-// QUIZ_GEN Randomizer
+/////////////////////////////// QUIZ_GEN Randomizer
 class Rnd{
 public:
   default_random_engine engine;
@@ -112,13 +138,13 @@ public:
 };
 
 
-// QUIZ_GRADE
+/////////////////////////////// QUIZ_GRADE
 double mapping( double x, double old_min, double old_max, double new_min, double new_max){
   return (x-old_min)/(old_max-old_min)*(new_max-new_min)+new_min;
 }
 
 
-// QUIZ_CORRECTIONS
+/////////////////////////////// QUIZ_CORRECTIONS
 string grade2outcome(vector<double> thresholds, double grade) {
   string outcome;
   if (thresholds.size() == 1) {
@@ -141,7 +167,7 @@ string grade2outcome(vector<double> thresholds, double grade) {
 }
 
 
-// QUIZ_STATS 
+/////////////////////////////// QUIZ_STATS 
 class Question_param {
 public:
   int repetitions, correct, wrong, blank;

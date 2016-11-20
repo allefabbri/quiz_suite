@@ -1,8 +1,6 @@
 #define _SCL_SECURE_NO_WARNINGS
 
 #include <iomanip>
-#include <fstream>
-#include <cstdlib>
 
 #include "latex_headers.hpp"
 
