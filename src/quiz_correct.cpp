@@ -1,11 +1,19 @@
 #define _SCL_SECURE_NO_WARNINGS
 
-#include <iomanip>
-
 #include "latex_headers.hpp"
 
 #define MAJOR      1
 #define MINOR      0
+
+void usage(char * progname) {
+  vector<string> tokens;
+  boost::split(tokens, progname, boost::is_any_of("/\\"));
+  cout << "Usage: " << tokens.back() << " path/to/config" << endl;
+  cout << "      path/to/config must be a valid config file" << endl;
+  cout << endl;
+  cout << "Usage: " << tokens.back() << " -conf_t" << endl;
+  cout << "      generate a dummy config file" << endl;
+}
 
 int main(int argc, char ** argv) {
   cout << "QuizCorrections v" << MAJOR << "." << MINOR << endl;
@@ -16,11 +24,7 @@ int main(int argc, char ** argv) {
     config_name = argv[1];
   }
   else {
-    cout << "Usage: " << argv[0] << " path/to/config" << endl;
-    cout << "      path/to/config must be a valid config file" << endl;
-    cout << endl;
-    cout << "Usage: " << argv[0] << " -conf_t" << endl;
-    cout << "      generate a dummy config file" << endl;
+    usage(argv[0]);
     exit(2);
   }
 
