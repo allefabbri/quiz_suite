@@ -7,16 +7,27 @@ void usage(char* progname) {
   vector<string> tokens;
   boost::split(tokens, progname, boost::is_any_of("/\\"));
   cout
-    << "Usage: " << tokens.back() << " /path/to/config [MODE] [PARAMS]" << endl;
+    << "Usage: " << tokens.back() << " /path/to/config [MODE] [PARAMS]" << R"(
 
-  //    << "Usage: " << tokens.back() << " /path/to/config <ser> <quiz>" << endl
-  //    << "       Returns quiz-name string" << endl << endl
-  //    << "Usage: " << tokens.back() << "  /path/to/config <ser> <quiz1> <quiz2> ... <quizN>" << endl
-  //    << "       Returns quiz1-name quiz2-name ... quizN-name" << endl << endl
-  //    << "Usage: " << tokens.back() << "  /path/to/config <ser> <quiz1> : <quizN>" << endl
-  //    << "       Returns quiz1-name quiz2-name ... quizN-name" << endl << endl
-  //    << "Usage: " << tokens.back() << "  /path/to/config quiz-name" << endl
-  //    << "       Returns <ser1> - <quiz1> <ser2> - <quiz2> ..." << endl << endl;
+MODE   : serial
+INFO   : query for exam composition by serial
+PARAMS - Mode 1 : serial quiz_number          
+         Return : quiz_name
+PARAMS - Mode 2 : serial quiz_number1 : quiz_number2
+         Return : list of quiz_name
+PARAMS - Mode 3 : quiz_name
+         Return : list of quiz_name
+
+MODE   : student
+INFO   : query for student outcome
+PARAMS - Mode 1 : surname name
+         Return : student score and topic suggestion
+PARAMS - Mode 2 : surname1 name1 ... surnameN nameN
+         Return : list of student score and topic suggestion
+PARAMS - Mode 3 : filename
+         Return : list of student score and topic suggestion
+
+)";
 }
 
 int main(int argc, char** argv) {
