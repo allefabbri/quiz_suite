@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
   string key, equal, value;
   ifstream filein(config_name);
   if (!filein) {
-    cout << "Configuration file " << config_name << " not found. Quitting..." << endl;
+    cerr << "Configuration file " << config_name << " not found. Quitting..." << endl;
     exit(3);
   }
   while (filein >> key >> equal >> value) {
@@ -80,18 +80,18 @@ int main(int argc, char** argv) {
       work_folder = value;
     }
     else {
-      cout << "Key " << key << " unknown. Edit " << config_name << endl;
+      cerr << "Key " << key << " unknown. Edit " << config_name << endl;
       exit(3);
     }
   }
   filein.close();
 
   if (work_folder == "") {
-    cout << "WORKING folder unset. Edit " << config_name << endl;
+    cerr << "WORKING folder unset. Edit " << config_name << endl;
     exit(3);
   }
   if (serials_name == "") {
-    cout << "SERIALS file unset. Edit " << config_name << endl;
+    cerr << "SERIALS file unset. Edit " << config_name << endl;
     exit(3);
   }
 
@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
   switch (mode) {
   case MODE_STUDENT:
     if (grades_name == "") {
-      cout << "GRADES file unset. Edit " << config_name << endl;
+      cerr << "GRADES file unset. Edit " << config_name << endl;
       exit(3);
     }
     // finire di parsare command line
@@ -146,28 +146,29 @@ int main(int argc, char** argv) {
     sort(quiz_num.begin(), quiz_num.end());
   
     // serial query
-    if (quiz_name == "") {
+    if (quiz_name == "" && quiz_num.size() ) {
       if (call.serials_map.count(serial) == 0) {
-        cout << "Invalid serial : " << serial << endl;
+        cerr << "Invalid serial : " << serial << endl;
         exit(2);
       }
       if (quiz_num[0] < 1 || quiz_num.back() >= call.serials_map.rbegin()->first) {   // reverse begin, i.e. last map element
-        cout << "Invalid quiz numbers : ";
+        cerr << "Invalid quiz numbers : ";
         for (auto n : quiz_num) cout << n << "  ";
         cout << endl;
         exit(3);
       }
 
-      cout << "Serial number  : " << serial << endl
+      cout 
+        << "Serial number  : " << serial << endl
         << "Quiz number(s) : ";
       for (auto n : quiz_num) cout << n << "  ";
       cout << endl;
 
-      cout << endl << "Quiz names     : ";
+      cout << "Quiz names     : ";
       for (auto n : quiz_num) cout << call.serials_map[serial].second[n - 1] << "   ";
       cout << endl;
     }
-    else {
+    else if ( quiz_name != "" && !quiz_num.size() ) {
       cout << "Quiz name      : " << quiz_name << endl;
       vector<pair<int, int>> result;
       for (auto it = call.serials_map.begin(); it != call.serials_map.end(); ++it) {
@@ -177,31 +178,23 @@ int main(int argc, char** argv) {
       }
 
       if (result.size() == 0) {
-        cout << "Quiz name " << quiz_name << " not found." << endl;
+        cerr << "Quiz name " << quiz_name << " not found." << endl;
         exit(4);
       }
       
-      cout << endl << "Ser-Num pairs (" << result.size() << ") : ";
+      cout << "Ser-Num pairs (" << result.size() << ") : ";
       for (auto r : result) cout << r.first << "-" << r.second << "   ";
       cout << endl;
+    }
+    else {
+      cerr << "Problems with parameters" << endl;
     }
     break;
 
   default:
+    cerr << "Unknown mode " << mode << endl;
     break;
   }
-
-  //    }
-  //  }
-  //  else if (argc == 3) {
-  //    filename = argv[1];
-  //    quiz_name = argv[2];
-
-
-
-
-
-  // Runtime branches
 
   return 0;
 }
