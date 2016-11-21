@@ -109,14 +109,64 @@ int main(int argc, char** argv) {
 
   // Runtime branches
   switch (mode) {
-  case MODE_STUDENT:
+  case MODE_STUDENT: {
+    string student_name;
     if (grades_name == "") {
       cerr << "GRADES file unset. Edit " << config_name << endl;
       exit(3);
     }
-    // finire di parsare command line
-    break;
+    // finish parsing command line (argc > 3 for sure)
+    if (argc == 5) {
+      student_name = string(argv[3]) + "\t" + argv[4];
+    }
 
+    cout << "Student        : " << student_name << endl;
+
+    // Importing grades file
+    string line;
+    vector<string> tokens;
+    filein.open(work_folder + "/" + grades_name);
+    if (!filein) {
+      cout << "GRADES file " << grades_name << " not found. Quitting..." << endl;
+      exit(4);
+    }
+    while (getline(filein, line)) {
+      trim(line);
+      split(tokens, line, is_any_of("\t"), token_compress_on);
+      if (tokens.size() > 5) call.exams.push_back(Exam(tokens, 'c'));
+    }
+    filein.close();
+
+    // Map construction
+    map<string, Outcome> call_map;
+    for (size_t i = 0; i < call.exams.size(); i++) {
+      auto this_exam = &(call_map[call.exams[i].surname + "\t" + call.exams[i].name]);
+      this_exam->grade = call.exams[i].grade_d;
+      for (size_t j = 0; j < call.exams[i].answers.size(); j++) {
+        if (call.exams[i].solutions[j] == '-') {
+          this_exam->bonus++;
+        }
+        else if (call.exams[i].answers[j] == '-') {
+          this_exam->blank++;
+        }
+        else if (call.exams[i].answers[j] == call.exams[i].solutions[j]) {
+          this_exam->correct++;
+        }
+        else {
+          this_exam->wrong++;
+        }
+      }
+    }
+
+    cout << "VOTO     : " << call_map[student_name].grade << endl;
+    cout << "CORRETTE : " << call_map[student_name].correct << endl;
+    if(call_map[student_name].bonus ) cout << "BONUS    : " << call_map[student_name].bonus   << endl;
+    cout << "BIANCHE  : " << call_map[student_name].blank   << endl;
+    cout << "ERRATE   : " << call_map[student_name].wrong   << endl;
+    cout << "RIPASSARE: " << NULL << endl;
+
+    break;
+  }
   case MODE_SERIAL:
     // finish parsing command line (argc > 3 for sure)
     try {
@@ -144,9 +194,10 @@ int main(int argc, char** argv) {
       quiz_name = argv[3];
     }
     sort(quiz_num.begin(), quiz_num.end());
-  
+
     // serial query
-    if (quiz_name == "" && quiz_num.size() ) {
+    if (quiz_name == "" && quiz_num.size()) {
+      // number number(s) mode
       if (call.serials_map.count(serial) == 0) {
         cerr << "Invalid serial : " << serial << endl;
         exit(2);
@@ -158,7 +209,7 @@ int main(int argc, char** argv) {
         exit(3);
       }
 
-      cout 
+      cout
         << "Serial number  : " << serial << endl
         << "Quiz number(s) : ";
       for (auto n : quiz_num) cout << n << "  ";
@@ -168,7 +219,8 @@ int main(int argc, char** argv) {
       for (auto n : quiz_num) cout << call.serials_map[serial].second[n - 1] << "   ";
       cout << endl;
     }
-    else if ( quiz_name != "" && !quiz_num.size() ) {
+    else if (quiz_name != "" && !quiz_num.size()) {
+      // quiz name mode
       cout << "Quiz name      : " << quiz_name << endl;
       vector<pair<int, int>> result;
       for (auto it = call.serials_map.begin(); it != call.serials_map.end(); ++it) {
@@ -181,7 +233,7 @@ int main(int argc, char** argv) {
         cerr << "Quiz name " << quiz_name << " not found." << endl;
         exit(4);
       }
-      
+
       cout << "Ser-Num pairs (" << result.size() << ") : ";
       for (auto r : result) cout << r.first << "-" << r.second << "   ";
       cout << endl;
@@ -192,7 +244,7 @@ int main(int argc, char** argv) {
     break;
 
   default:
-    cerr << "Unknown mode " << mode << endl;
+    cerr << "Unknown mode : " << mode << endl;
     break;
   }
 

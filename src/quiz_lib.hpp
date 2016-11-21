@@ -46,6 +46,7 @@ public:
     }
     else if( mode == 'g' ){       // 'g' is for GRADING mode
       if( tokens.size() > 3 ){
+        // sample line : 22 ABCD... Rossi Mario
         serial = atoi(tokens[0].c_str()); 
         answers = tokens[1];
         surname = tokens[2];
@@ -192,3 +193,12 @@ double binomial_coeff(int n, int k){
 double binomial_dist(int n, int k, double p){
   return binomial_coeff(n,k)*pow(p,k)*pow(1-p,n-k);
 }
+
+
+/////////////////////////////// QUIZ_QUERY
+class Outcome {
+public:
+  int correct, wrong, blank, bonus;
+  double grade;
+};
+
