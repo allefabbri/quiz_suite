@@ -23,6 +23,9 @@
     <ClInclude Include="..\..\src\quiz_lib.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\topic.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

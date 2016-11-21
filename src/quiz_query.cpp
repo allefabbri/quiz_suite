@@ -1,4 +1,5 @@
 #include "quiz_lib.hpp"
+#include "topic.hpp"
 
 #define MODE_STUDENT     0
 #define MODE_SERIAL      1
@@ -154,21 +155,32 @@ int main(int argc, char** argv) {
         }
         else {
           this_exam->wrong++;
+          // recover suggested topics (if any)
+          string question_name = call.serials_map[call.exams[i].serial].second[j];
+          this_exam->topics.push_back( topic_map[question_name] );
         }
       }
+      auto top = &(this_exam->topics);
+      sort(top->begin(), top->end());
+      top->erase(unique(top->begin(), top->end()), top->end());
     }
 
-    cout << "VOTO     : " << call_map[student_name].grade << endl;
-    cout << "CORRETTE : " << call_map[student_name].correct << endl;
-    if(call_map[student_name].bonus ) cout << "BONUS    : " << call_map[student_name].bonus   << endl;
-    cout << "BIANCHE  : " << call_map[student_name].blank   << endl;
-    cout << "ERRATE   : " << call_map[student_name].wrong   << endl;
-    cout << "RIPASSARE: " << NULL << endl;
-
+    cout << "VOTO      : " << call_map[student_name].grade << endl;
+    cout << "CORRETTE  : " << call_map[student_name].correct << endl;
+    if(call_map[student_name].bonus ) cout << "BONUS     : " << call_map[student_name].bonus   << endl;
+    cout << "BIANCHE   : " << call_map[student_name].blank   << endl;
+    cout << "ERRATE    : " << call_map[student_name].wrong   << endl;
+    cout << "RIPASSARE : ";
+    for (auto t : call_map[student_name].topics)
+      if (t.size())
+        cout << endl << "\t- " << t;
+      else
+        cout << "No match";
+    cout << endl;
     break;
   }
   case MODE_SERIAL:
-    // finish parsing command line (argc > 3 for sure)
+    // finish parsing command line (argc > 3)
     try {
       serial = stoi(argv[3]);
       for (int i = 4; i < argc; ++i) {
@@ -250,6 +262,3 @@ int main(int argc, char** argv) {
 
   return 0;
 }
-
-
-

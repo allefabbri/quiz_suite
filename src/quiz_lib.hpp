@@ -115,6 +115,7 @@ public:
   }
 };
 
+
 /////////////////////////////// QUIZ_GEN Randomizer
 class Rnd{
 public:
@@ -200,5 +201,5 @@ class Outcome {
 public:
   int correct, wrong, blank, bonus;
   double grade;
+  vector<string> topics;
 };
-
