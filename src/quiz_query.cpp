@@ -1,8 +1,4 @@
 #include "quiz_lib.hpp"
-#include "topic.hpp"
-
-#define MODE_STUDENT     0
-#define MODE_SERIAL      1
 
 void usage(char* progname) {
   vector<string> tokens;
@@ -31,7 +27,15 @@ PARAMS - Mode 3 : filename
 )";
 }
 
+constexpr char MODE_STUDENT = 0;
+constexpr char MODE_SERIAL  = 1;
+
+constexpr char MAJOR = '1';
+constexpr char MINOR = '0';
+
 int main(int argc, char** argv) {
+  cout << "QuizQuery v" << MAJOR << "." << MINOR << endl;
+
   string config_name, input_mode;
   char mode;
 
@@ -42,6 +46,7 @@ int main(int argc, char** argv) {
     config
       << "SERIALS     = serials.txt" << endl
       << "GRADES_FILE = voti.txt" << endl
+      << "TOPICS_FILE = topics.txt" << endl
       << "WORK_FOLDER = appello1" << endl << endl;
     config.close();
     exit(-1);
@@ -63,7 +68,7 @@ int main(int argc, char** argv) {
   }
 
   // Safe CONFIG file parsing
-  string grades_name, serials_name, work_folder;
+  string grades_name, serials_name, topics_name, work_folder;
   string key, equal, value;
   ifstream filein(config_name);
   if (!filein) {
@@ -76,6 +81,9 @@ int main(int argc, char** argv) {
     }
     else if (key == "SERIALS") {
       serials_name = value;
+    }
+    else if (key == "TOPICS_FILE") {
+      topics_name = value;
     }
     else if (key == "WORK_FOLDER") {
       work_folder = value;
@@ -110,10 +118,15 @@ int main(int argc, char** argv) {
 
   // Runtime branches
   switch (mode) {
+  // Student mode
   case MODE_STUDENT: {
     string student_name;
     if (grades_name == "") {
       cerr << "GRADES file unset. Edit " << config_name << endl;
+      exit(3);
+    }
+    if (topics_name == "") {
+      cerr << "TOPICS fie unset. Edit " << config_name << endl;
       exit(3);
     }
     // finish parsing command line (argc > 3 for sure)
@@ -121,7 +134,15 @@ int main(int argc, char** argv) {
       student_name = string(argv[3]) + "\t" + argv[4];
     }
 
+    cout << "Topics file    : " << topics_name << endl;
     cout << "Student        : " << student_name << endl;
+
+    // Create topic map
+    auto topic_map = create_topic_map(work_folder + "/" + topics_name);
+    if (topic_map.size() == 0) {
+      cerr << "Failed to load topic map, size " << topic_map.size() << endl;
+      exit(55);
+    }
 
     // Importing grades file
     string line;

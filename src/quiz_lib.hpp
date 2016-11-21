@@ -203,3 +203,26 @@ public:
   double grade;
   vector<string> topics;
 };
+
+// creates a topic map { "question name" , "Suggested topics" }
+map<string, string> create_topic_map(string filename) {
+  map<string, string> map;
+  ifstream topic_file(filename);
+  if (!topic_file) {
+    cerr << "Topic file " << filename << " not found." << endl;
+  }
+  else {
+    string qname, qtopic;
+    cout << qname << " " << qtopic << endl;
+    while (topic_file >> qname) {
+      topic_file >> qtopic;
+      string line;
+      getline(topic_file, line);
+      qtopic += line;
+
+      map[qname] = qtopic;
+    }
+  }
+
+  return map;
+}
