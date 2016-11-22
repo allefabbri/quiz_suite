@@ -44,11 +44,6 @@ int main(int argc, char ** argv) {
     exit(2);
   }
 
-  // Create config
-  StatsConfig c(config_name);
-  c.parsefile();
-  if (!c.check_params()) exit(4);
-
   // Variables and containers
   string line, file_path;
   vector<string> tokens;
@@ -57,6 +52,11 @@ int main(int argc, char ** argv) {
   size_t pad_name = 0;
   map<int, int> pardon_bins;
   Call call;
+
+  // Create config
+  StatsConfig c(config_name, &call);
+  c.parsefile();
+  if (!c.check_params()) exit(4);
 
   // Import GRADES file
   file_path = c.work_folder + "/" + c.grades_name;

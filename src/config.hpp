@@ -268,8 +268,9 @@ public:
 ///////////////// CONFIG for quiz_grade
 class GradeConfig : public BaseConfig {
 public:
-  GradeConfig(string _config_name) {
+  GradeConfig(string _config_name, Call * _callptr) {
     config_name = _config_name;
+    callptr = _callptr;
     if (config_name == "-conf_t") {
       std::cout << "Creating empty config file \"grade.config\"" << std::endl;
       std::ofstream fileout("grade.config");
@@ -406,8 +407,9 @@ public:
 ///////////////// CONFIG for quiz_stats
 class StatsConfig : public BaseConfig {
 public:
-  StatsConfig(string _config_name) {
+  StatsConfig(string _config_name, Call * _callptr) {
     config_name = _config_name;
+    callptr = _callptr;
     if (config_name == "-conf_t") {
       std::cout << "Creating empty config file \"stats.config\"" << std::endl;
       std::ofstream fileout("stats.config");
@@ -454,8 +456,9 @@ public:
 ///////////////// CONFIG for quiz_query
 class QueryConfig : public BaseConfig {
 public:
-  QueryConfig(string _config_name){
+  QueryConfig(string _config_name, Call * _callptr){
     config_name = _config_name;
+    callptr = _callptr;
     if (config_name == "-conf_t") {
       cout << "Generating empty config file \"query.config\"" << endl;
       std::ofstream config("query.config");

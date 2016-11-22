@@ -77,16 +77,16 @@ int main(int argc, char** argv) {
     exit(-1);
   }
 
-  // Create config object
-  QueryConfig c(config_name);
-  c.parsefile();
-  if ( !c.check_params() ) exit(4);
-
   // Variables and containers
   int serial;
   vector<int> quiz_num;
   string quiz_name = "";
   Call call;
+
+  // Create config object
+  QueryConfig c(config_name, &call);
+  c.parsefile();
+  if ( !c.check_params() ) exit(4);
 
   // Import serial file
   call.parse_serial(c.work_folder + "/" + c.serials_name);

@@ -53,16 +53,16 @@ int main(int argc, char ** argv) {
     exit(2);
   }
 
-  // Create config object
-  GradeConfig c(config_name);
-  c.parsefile();
-  if (!c.check_params()) exit(4);
-
   // Variables and containers
   string line, file_path;
   vector<string> tokens;
   map<int, vector<int> > bugs_map, healthy_map;
   Call call;
+
+  // Create config object
+  GradeConfig c(config_name, &call);
+  c.parsefile();
+  if (!c.check_params()) exit(4);
 
   // Import RESULTS handwritten, structure { serials, answers, surname, name }
   ifstream filein(c.work_folder + "/" + c.results_name);

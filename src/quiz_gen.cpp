@@ -262,7 +262,7 @@ int main(int argc, char ** argv) {
   fileout << exam_form(call);
   fileout.close();
 
-  // Writing EXAM form
+  // Writing DATABASE form
   log << log_counter << ") Writing database form" << endl; log_counter++;
   file_path = c.work_folder + "/database-form.tex";
   fileout.open(file_path);
