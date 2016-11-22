@@ -1,4 +1,11 @@
 #include "quiz_lib.hpp"
+#include "config.hpp"
+
+constexpr char MODE_STUDENT = 0;
+constexpr char MODE_SERIAL  = 1;
+
+constexpr int MAJOR = 2;
+constexpr int MINOR = 0;
 
 void usage(char* progname) {
   vector<string> tokens;
@@ -27,12 +34,6 @@ PARAMS - Mode 3 : filename
 )";
 }
 
-constexpr char MODE_STUDENT = 0;
-constexpr char MODE_SERIAL  = 1;
-
-constexpr char MAJOR = '1';
-constexpr char MINOR = '0';
-
 int main(int argc, char** argv) {
   cout << "QuizQuery v" << MAJOR << "." << MINOR << endl;
 
@@ -40,18 +41,7 @@ int main(int argc, char** argv) {
   char mode;
 
   // Parsing command line
-  if (argc == 2 && string(argv[1]) == "-conf_t") {
-    cout << "Generating empty config file named \"query.config\"" << endl;
-    std::ofstream config("query.config");
-    config
-      << "SERIALS     = serials.txt" << endl
-      << "GRADES_FILE = voti.txt" << endl
-      << "TOPICS_FILE = topics.txt" << endl
-      << "WORK_FOLDER = appello1" << endl << endl;
-    config.close();
-    exit(-1);
-  }
-  else if (argc > 3) {
+  if (argc > 3) {
     config_name = argv[1];
     input_mode = argv[2];
     if (input_mode == "student") mode = MODE_STUDENT;
@@ -62,47 +52,18 @@ int main(int argc, char** argv) {
       exit(-2);
     }
   }
+  else if (argc == 2) {
+    config_name = argv[1];
+  }
   else {
     usage(argv[0]);
-    exit(1);
+    exit(-1);
   }
 
-  // Safe CONFIG file parsing
-  string grades_name, serials_name, topics_name, work_folder;
-  string key, equal, value;
-  ifstream filein(config_name);
-  if (!filein) {
-    cerr << "Configuration file " << config_name << " not found. Quitting..." << endl;
-    exit(3);
-  }
-  while (filein >> key >> equal >> value) {
-    if (key == "GRADES_FILE") {
-      grades_name = value;
-    }
-    else if (key == "SERIALS") {
-      serials_name = value;
-    }
-    else if (key == "TOPICS_FILE") {
-      topics_name = value;
-    }
-    else if (key == "WORK_FOLDER") {
-      work_folder = value;
-    }
-    else {
-      cerr << "Key " << key << " unknown. Edit " << config_name << endl;
-      exit(3);
-    }
-  }
-  filein.close();
-
-  if (work_folder == "") {
-    cerr << "WORKING folder unset. Edit " << config_name << endl;
-    exit(3);
-  }
-  if (serials_name == "") {
-    cerr << "SERIALS file unset. Edit " << config_name << endl;
-    exit(3);
-  }
+  // Create config object
+  QueryConfig c(config_name);
+  c.parsefile();
+  if ( !c.check_params() ) exit(4);
 
   // Variables and containers
   int serial;
@@ -111,34 +72,24 @@ int main(int argc, char** argv) {
   Call call;
 
   // Import serial file
-  call.parse_serial(work_folder + "/" + serials_name);
-
-  // Console info
-  cout << "Serial file    : " << serials_name << endl;
-
+  call.parse_serial(c.work_folder + "/" + c.serials_name);
+  cout << "Serial file    : " << c.serials_name << endl;
+  
   // Runtime branches
   switch (mode) {
   // Student mode
   case MODE_STUDENT: {
-    string student_name;
-    if (grades_name == "") {
-      cerr << "GRADES file unset. Edit " << config_name << endl;
-      exit(3);
-    }
-    if (topics_name == "") {
-      cerr << "TOPICS fie unset. Edit " << config_name << endl;
-      exit(3);
-    }
     // finish parsing command line (argc > 3 for sure)
+    string student_name;
     if (argc == 5) {
       student_name = string(argv[3]) + "\t" + argv[4];
     }
 
-    cout << "Topics file    : " << topics_name << endl;
+    cout << "Topics file    : " << c.topics_name << endl;
     cout << "Student        : " << student_name << endl;
 
     // Create topic map
-    auto topic_map = create_topic_map(work_folder + "/" + topics_name);
+    auto topic_map = create_topic_map(c.work_folder + "/" + c.topics_name);
     if (topic_map.size() == 0) {
       cerr << "Failed to load topic map, size " << topic_map.size() << endl;
       exit(55);
@@ -147,9 +98,9 @@ int main(int argc, char** argv) {
     // Importing grades file
     string line;
     vector<string> tokens;
-    filein.open(work_folder + "/" + grades_name);
+    ifstream filein(c.work_folder + "/" + c.grades_name);
     if (!filein) {
-      cout << "GRADES file " << grades_name << " not found. Quitting..." << endl;
+      cout << "GRADES file " << c.grades_name << " not found. Quitting..." << endl;
       exit(4);
     }
     while (getline(filein, line)) {

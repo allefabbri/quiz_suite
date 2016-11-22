@@ -106,7 +106,7 @@ Firma: \underline{\hspace{17.7cm}}
 \vspace{1cm}
 \noindent
 )";
-  double correct = call.scale / call.exams[0].questions.size(),
+  double correct = call.score_scale / call.exams[0].questions.size(),
     wrong = -correct / (call.exams[0].questions[0].answers.size() - 1),
     blank = 0.0;
   ss << exam_tex_instructions(correct, blank, wrong ) << endl;

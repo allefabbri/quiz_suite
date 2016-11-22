@@ -1,7 +1,8 @@
 #include "quiz_lib.hpp"
+#include "config.hpp"
 
-#define MAJOR     1
-#define MINOR     0
+constexpr int MAJOR = 2;
+constexpr int MINOR = 0;
 
 void usage(char * progname) {
   vector<string> tokens;
@@ -26,76 +27,10 @@ int main(int argc, char ** argv) {
     exit(2);
   }
 
-  // Generating empty config file
-  if (config_name == "-conf_t") {
-    std::cout << "Creating empty config file \"stats.config\"" << std::endl;
-    std::ofstream fileout("stats.config");
-    fileout
-      << "WORK_FOLDER = appello1" << endl
-      << "GRADES      = voti.txt" << endl
-      << "SERIALS     = serials.txt" << endl
-      << "REPORT      = report.txt" << endl
-      << "BINS        = [ 0 10 20 30 ]" << endl << endl;
-    fileout.close();
-    exit(-1);
-  }
-
-  // Safe CONFIG file parsing
-  string grades_name, serials_name, report_name, work_folder;
-  vector<double> bin_pivot;
-  string key, equal, value;
-  ifstream filein(config_name);
-  if (!filein) {
-    cout << "Configuration file " << config_name << " not found. Quitting..." << endl;
-    exit(3);
-  }
-  while (filein >> key >> equal >> value) {
-    if (key == "WORK_FOLDER") {
-      work_folder = value;
-    }
-    else if (key == "GRADES") {
-      grades_name = value;
-    }
-    else if (key == "SERIALS") {
-      serials_name = value;
-    }
-    else if (key == "REPORT") {
-      report_name = value;
-    }
-    else if (key == "BINS" && value == "[") {
-      while (1) {
-        filein >> value;
-        if (value == "]") break;
-        bin_pivot.push_back(atof(value.c_str()));
-      }
-    }
-    else {
-      cout << "Key " << key << " unknown. Edit " << config_name << endl;
-      exit(3);
-    }
-  }
-  filein.close();
-
-  if (work_folder == "") {
-    cout << "WORKING folder unset. Edit " << config_name << endl;
-    exit(3);
-  }
-  if (grades_name == "") {
-    cout << "GRADES file unset. Edit " << config_name << endl;
-    exit(3);
-  }
-  if (serials_name == "") {
-    cout << "SERIALS file unset. Edit " << config_name << endl;
-    exit(3);
-  }
-  if (report_name == "") {
-    cout << "REPORT file unset. Edit " << config_name << endl;
-    exit(3);
-  }
-  if (bin_pivot.size() < 2) {
-    cout << "BINS values unset. Edit " << config_name << endl;
-    exit(3);
-  }
+  // Create config
+  StatsConfig c(config_name);
+  c.parsefile();
+  if (!c.check_params()) exit(4);
 
   // Variables and containers
   string line, file_path;
@@ -107,8 +42,8 @@ int main(int argc, char ** argv) {
   Call call;
 
   // Import GRADES file
-  file_path = work_folder + "/" + grades_name;
-  filein.open(file_path);
+  file_path = c.work_folder + "/" + c.grades_name;
+  ifstream filein(file_path);
   if (!filein) {
     cout << "GRADES file " << file_path << " not found. Quitting..." << endl;
     exit(4);
@@ -121,7 +56,7 @@ int main(int argc, char ** argv) {
   filein.close();
 
   // Import SERIALS file
-  file_path = work_folder + "/" + serials_name;
+  file_path = c.work_folder + "/" + c.serials_name;
   filein.open(file_path);
   if (!filein) {
     std::cout << "SERIALS file " << file_path << " not found. Quitting..." << std::endl;
@@ -167,13 +102,13 @@ int main(int argc, char ** argv) {
   }
 
   // Evaluating grade bins
-  vector<int> bin_freq(bin_pivot.size() - 1);
+  vector<int> bin_freq(c.bin_pivot.size() - 1);
   for (auto exam : call.exams) {
     int index = -1;
-    for (auto b : bin_pivot) {
+    for (auto b : c.bin_pivot) {
       if (exam.grade_d < b) break;
       index++;
-      if (index > bin_pivot.size() - 2) index = (int)bin_pivot.size() - 2; // to include grades in the last bin
+      if (index > c.bin_pivot.size() - 2) index = (int)c.bin_pivot.size() - 2; // to include grades in the last bin
     }
     bin_freq[index]++;
   }
@@ -183,7 +118,12 @@ int main(int argc, char ** argv) {
   }
 
   // Dumping REPORT
-  ofstream fileout(work_folder + "/" + report_name);
+  file_path = c.work_folder + "/" + c.stat_report;
+  ofstream fileout(file_path);
+  if (!fileout) {
+    cout << "REPORT file " << file_path << " impossible to create. Quitting..." << endl;
+    exit(8);
+  }
   int pad_count = 5, pad_perc = 5;
   fileout << "Database size     : " << question_map.size() << " questions" << endl
     << "Call size         : " << call.exams.size() << " students" << endl
@@ -198,7 +138,7 @@ int main(int argc, char ** argv) {
   fileout << "Tot questions     : " << call.exams.size()*call.exams[0].answers.size() << " = " << tot_r << endl;
   fileout << "Coarse grade bins : " << endl;
   for (int i = 0; i < bin_freq.size(); i++) {
-    fileout << "\t] " << setw(5) << bin_pivot[i] << " , " << setw(5) << bin_pivot[i + 1] << " ] -> "
+    fileout << "\t] " << setw(5) << c.bin_pivot[i] << " , " << setw(5) << c.bin_pivot[i + 1] << " ] -> "
       << setw(3) << bin_freq[i] << " ( "
       << setw(5) << fixed << setprecision(1) << 100 * bin_freq[i] / double(call.exams.size()) << " % )" << endl;
   }

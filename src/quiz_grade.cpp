@@ -1,7 +1,8 @@
 #include "quiz_lib.hpp"
+#include "config.hpp"
 
-#define MAJOR       1
-#define MINOR       0
+constexpr int MAJOR = 2;
+constexpr int MINOR = 0;
 
 void usage(char * progname) {
   vector<string> tokens;
@@ -36,113 +37,22 @@ int main(int argc, char ** argv) {
   }
 
   // Generating empty config file
-  if (config_name == "-conf_t") {
-    std::cout << "Creating empty config file \"grade.config\"" << std::endl;
-    std::ofstream fileout("grade.config");
-    fileout
-      << "BUGS            = errors.txt" << endl
-      << "SERIALS         = serials.txt" << endl
-      << "REPORT_BASENAME = appello1" << endl
-      << "RESULTS         = risultati.txt" << endl
-      << "GRADES          = voti.txt" << endl
-      << "CHOICES         = 4" << endl
-      << "SCORE_SCALE     = 30" << endl
-      << "WORK_FOLDER     = appello1" << endl << endl;
-    fileout.close();
-    exit(-1);
-  }
 
-  // Safe CONFIG file parsing
-  string bugs_name, serials_name, report_basename, results_name, grade_name, work_folder;
-  string key, equal, value;
-  int choices_number = -1, score_scale = -1;
-  bool is_call_bugged;
-  ifstream filein(config_name);
-  if (!filein) {
-    cout << "Configuration file " << config_name << " not found. Quitting..." << endl;
-    exit(3);
-  }
-  while (filein >> key >> equal >> value) {
-    if (key == "BUGS") {
-      bugs_name = value;
-    }
-    else if (key == "SERIALS") {
-      serials_name = value;
-    }
-    else if (key == "REPORT_BASENAME") {
-      report_basename = value;
-    }
-    else if (key == "RESULTS") {
-      results_name = value;
-    }
-    else if (key == "GRADES") {
-      grade_name = value;
-    }
-    else if (key == "CHOICES") {
-      choices_number = atoi(value.c_str());
-    }
-    else if (key == "SCORE_SCALE") {
-      score_scale = atoi(value.c_str());
-    }
-    else if (key == "WORK_FOLDER") {
-      work_folder = value;
-    }
-    else {
-      cout << "Key " << key << " unknown. Edit " << config_name << endl;
-      exit(3);
-    }
-  }
-  filein.close();
-
-  if (bugs_name == "") {
-    cout << "BUGS file unset, entering HEALTHY mode" << endl;
-    is_call_bugged = false;
-  }
-  else {
-    cout << "BUGS file set, entering BUGGED mode" << endl;
-    is_call_bugged = true;
-  }
-  if (serials_name == "") {
-    cout << "SERIALS file unset. Edit " << config_name << endl;
-    exit(3);
-  }
-  if (report_basename == "") {
-    cout << "REPORT BASENAME unset. Edit " << config_name << endl;
-    exit(3);
-  }
-  if (results_name == "") {
-    cout << "RESULTS file unset. Edit " << config_name << endl;
-    exit(3);
-  }
-  if (grade_name == "") {
-    cout << "GRADES file unset. Edit " << config_name << endl;
-    exit(3);
-  }
-  if (choices_number == -1) {
-    cout << "CHOICES value unset. Edit " << config_name << endl;
-    exit(3);
-  }
-  if (score_scale == -1) {
-    cout << "SCORE SCALE value unset. Edit " << config_name << endl;
-    exit(3);
-  }
-  if (work_folder == "") {
-    cout << "WORK FOLDER unset. Edit " << config_name << endl;
-    exit(3);
-  }
+  // Create config object
+  GradeConfig c(config_name);
+  c.parsefile();
+  if (!c.check_params()) exit(4);
 
   // Variables and containers
-  ofstream fileout;
   string line, file_path;
   vector<string> tokens;
   map<int, vector<int> > bugs_map, healthy_map;
   Call call;
 
   // Import RESULTS handwritten, structure { serials, answers, surname, name }
-  file_path = work_folder + "/" + results_name;
-  filein.open(file_path);
+  ifstream filein(c.work_folder + "/" + c.results_name);
   if (!filein) {
-    cout << "RESULTS file " << file_path << " not found. Quitting..." << endl;
+    cout << "RESULTS file " << c.results_name << " not found. Quitting..." << endl;
     exit(4);
   }
   while (getline(filein, line)) {
@@ -155,10 +65,9 @@ int main(int argc, char ** argv) {
   // Import SERIALS file whose layout is 
   // { serial number, question_name1, question_name2, ... , question_nameN, correct_answer }
   // into serials_v
-  file_path = work_folder + "/" + serials_name;
-  filein.open(file_path);
+  filein.open(c.work_folder + "/" + c.serials_name);
   if (!filein) {
-    cout << "SERIALS file " << file_path << " not found. Quitting..." << endl;
+    cout << "SERIALS file " << c.serials_name << " not found. Quitting..." << endl;
     exit(5);
   }
   while (getline(filein, line)) {
@@ -176,27 +85,25 @@ int main(int argc, char ** argv) {
     exam.solutions = call.serials_map[exam.serial].first;
   }
 
-
   // Calculating grade scales and question points
   double grade_min, grade_max, score_min, score_max;
   double correct_score, wrong_score, blank_score;
   int question_number = (int)call.exams[0].answers.size();
-  score_max = score_scale;
-  score_min = -score_scale / double(choices_number - 1);
+  score_max = call.score_scale;
+  score_min = -call.score_scale / double(c.choices_number - 1);
   grade_min = 0;
   grade_max = 30;
   correct_score = score_max / question_number;
-  wrong_score = -correct_score / (choices_number - 1);
+  wrong_score = -correct_score / (c.choices_number - 1);
   blank_score = 0.0;
 
   // BUGGED mode specific operations
-  if (is_call_bugged) {
+  if (c.is_call_bugged) {
     // Import WRONG QUESTION list file
     vector<string> error_list;
-    file_path = work_folder + "/" + bugs_name;
-    filein.open(file_path);
+    filein.open(c.work_folder + "/" + c.bugs_name);
     if (!filein) {
-      cout << "BUGS file " << file_path << " not found. Quitting..." << endl;
+      cout << "BUGS file " << c.bugs_name << " not found. Quitting..." << endl;
       exit(4);
     }
     while (filein >> line) error_list.push_back(line);
@@ -216,9 +123,9 @@ int main(int argc, char ** argv) {
 
     // Dump LOG to file
     string flag;
-    fileout.open(work_folder + "/" + report_basename + ".log");
+    ofstream fileout(c.work_folder + "/" + c.grade_report_basename + ".log");
     if (!fileout) {
-      cout << "LOG file " << report_basename << ".log not found. Quitting..." << endl;
+      cout << "LOG file " << c.grade_report_basename << ".log impossible to create. Quitting..." << endl;
       exit(6);
     }
     fileout << endl << "BUGGED question : " << error_list.size() << endl;
@@ -254,8 +161,11 @@ int main(int argc, char ** argv) {
     fileout.close();
 
     // Dumping BUGS and HEALTHY MAP to file
-    file_path = work_folder + "/" + report_basename + ".bugs_map";
-    fileout.open(file_path);
+    fileout.open(c.work_folder + "/" + c.grade_report_basename + ".bugs_map");
+    if (!fileout) {
+      cout << "BUGS MAP file " << c.grade_report_basename << ".bugs_map impossible to create. Quitting..." << endl;
+      exit(7);
+    }
     fileout << "BUGGED serials  : " << bugs_map.size()
       << " (" << fixed << setprecision(2) << bugs_map.size() / double(call.serials_map.size()) << " %)" << endl
       << "HEALTHY serials : " << healthy_map.size()
@@ -331,7 +241,12 @@ int main(int argc, char ** argv) {
   }
 
   // Dump results to GRADES
-  fileout.open(work_folder + "/" + grade_name);
+  file_path = c.work_folder + "/" + c.grades_name;
+  ofstream fileout(file_path);
+  if (!fileout) {
+    cout << "GRADES file " << file_path << " impossible to create. Quitting..." << endl;
+    exit(8);
+  }
   fileout << "Score range       : [ " << fixed << setprecision(2) << setw(6)
     << score_min << " , " << score_max << " ]" << endl
     << "Grade range       : [ " << fixed << setprecision(2) << setw(6)

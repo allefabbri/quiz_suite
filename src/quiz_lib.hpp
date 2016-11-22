@@ -84,7 +84,7 @@ public:
   // Vars and containers
   string name;                                              // general purpose
   string date, course, tag, cdl, commission;                // for latex headers
-  double scale;
+  double score_scale;
   vector<Exam> exams;
   map<int, pair<string, vector<string> > > serials_map;     // { serial, { solutions, {questions names, ...} } }
 
