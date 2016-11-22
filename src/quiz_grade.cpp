@@ -45,8 +45,8 @@ int main(int argc, char ** argv) {
   }
   else if (argc == 4) {
     config_name = argv[1];
-    verbose_correction = true;
     target_student = argv[3];
+    verbose_correction = true;
   }
   else {
     usage(argv[0]);
@@ -78,22 +78,7 @@ int main(int argc, char ** argv) {
   filein.close();
 
   // Import SERIALS file whose layout is 
-  // { serial number, question_name1, question_name2, ... , question_nameN, correct_answer }
-  // into serials_v
-  filein.open(c.work_folder + "/" + c.serials_name);
-  if (!filein) {
-    cout << "SERIALS file " << c.serials_name << " not found. Quitting..." << endl;
-    exit(5);
-  }
-  while (getline(filein, line)) {
-    trim(line);
-    if (line[0] == '%') continue;
-    split(tokens, line, is_any_of("\t "), token_compress_on);
-    if (tokens.size() > 6) {   // to skip header line, if any
-      call.add_serial(tokens);
-    }
-  }
-  filein.close();
+  call.parse_serial(c.work_folder + "/" + c.serials_name);
 
   // Associate to each exam its solutions
   for (auto &exam : call.exams) {

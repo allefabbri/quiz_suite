@@ -73,20 +73,7 @@ int main(int argc, char ** argv) {
   filein.close();
 
   // Import SERIALS file
-  file_path = c.work_folder + "/" + c.serials_name;
-  filein.open(file_path);
-  if (!filein) {
-    std::cout << "SERIALS file " << file_path << " not found. Quitting..." << std::endl;
-    exit(2);
-  }
-  getline(filein, line);             // here to skip header line
-  while (getline(filein, line)) {
-    trim_if(line, boost::is_any_of(" \t"));
-    if (line[0] == '%') continue;
-    split(tokens, line, boost::is_any_of("\t "), boost::token_compress_on);
-    call.add_serial(tokens);
-  }
-  filein.close();
+  call.parse_serial(c.work_folder + "/" + c.serials_name);
 
   // Evaluate stats
   for (auto exam : call.exams) {

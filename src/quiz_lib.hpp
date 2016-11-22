@@ -28,7 +28,7 @@ using namespace boost::algorithm;
 
 
 /////////////////////////////// QUESTION class
-class Question{
+class Question {
 public:
   string path, name;
   string text;
@@ -37,7 +37,7 @@ public:
 
 
 /////////////////////////////// EXAM class
-class Exam{
+class Exam {
 public:
   int serial;                                               // for generating/grading/corrections
   vector<Question> questions;                               // for generating
@@ -45,10 +45,10 @@ public:
   int grade;                                                // for grading/corrections
   double score, pardon_score, grade_d;                      // for grading/corrections
   vector<string> colors;                                    // for corrections
-  Exam(){};
-  Exam( vector<string> tokens, char mode){
-    if( mode == 'c' ){              // 'c' is for CORRECTIONS mode
-      if( tokens.size() > 8 ){
+  Exam() {};
+  Exam(vector<string> tokens, char mode) {
+    if (mode == 'c') {              // 'c' is for CORRECTIONS mode
+      if (tokens.size() > 8) {
         colors.resize(tokens[1].size());
         serial = atoi(tokens[0].c_str());
         answers = tokens[1];
@@ -61,10 +61,10 @@ public:
         student = surname + "\t" + name;
       }
     }
-    else if( mode == 'g' ){       // 'g' is for GRADING mode
-      if( tokens.size() > 3 ){
+    else if (mode == 'g') {       // 'g' is for GRADING mode
+      if (tokens.size() > 3) {
         // sample line : 22 ABCD... Rossi Mario
-        serial = atoi(tokens[0].c_str()); 
+        serial = atoi(tokens[0].c_str());
         answers = tokens[1];
         surname = tokens[2];
         name = tokens[3];
@@ -73,8 +73,8 @@ public:
         score = pardon_score = 0.0;
       }
     }
-    else if( mode == 's' ){       // 's' is for STATISTICS mode
-      if( tokens.size() > 8 ){
+    else if (mode == 's') {       // 's' is for STATISTICS mode
+      if (tokens.size() > 8) {
         serial = atoi(tokens[0].c_str());
         answers = tokens[1];
         solutions = tokens[2];
@@ -87,7 +87,7 @@ public:
         student = surname + "\t" + name;
       }
     }
-    else{
+    else {
       std::cout << "Exam constructor mode " << mode << " unknown. Quitting..." << std::endl;
       exit(77);
     }
@@ -96,7 +96,7 @@ public:
 
 
 /////////////////////////////// CALL class
-class Call{
+class Call {
 public:
   // Vars and containers
   string name;                                              // general purpose
@@ -106,12 +106,14 @@ public:
   map<int, pair<string, vector<string> > > serials_map;     // { serial, { solutions, {questions names, ...} } }
 
   // Methods
-  void add_serial( vector<string> tokens ){
+  void add_serial(vector<string> tokens) {
     serials_map[atoi(tokens[0].c_str())].first = tokens.back();
-    for( int i = 1; i<tokens.size()-1; i++){
-      serials_map[atoi(tokens[0].c_str())].second.push_back( tokens[i] );
+    for (int i = 1; i < tokens.size() - 1; i++) {
+      serials_map[atoi(tokens[0].c_str())].second.push_back(tokens[i]);
     }
   }
+  // Import SERIALS file
+  // layout { serial number, question_name1, question_name2, ... , question_nameN, correct_answer }
   void parse_serial(string filename) {
     ifstream filein(filename);
     if (!filein) {
@@ -134,24 +136,24 @@ public:
 
 
 /////////////////////////////// QUIZ_GEN Randomizer
-class Rnd{
+class Rnd {
 public:
   default_random_engine engine;
   uniform_int_distribution<int> u_int;
-  Rnd(unsigned int s){
+  Rnd(unsigned int s) {
     engine.seed(s);
   };
-  int operator() (int min, int max){
-    return uniform_int_distribution<int>{min,max}(engine);
+  int operator() (int min, int max) {
+    return uniform_int_distribution<int>{min, max}(engine);
   };
   template<class T>
-  std::vector<T> shuffle(std::vector<T> v){
+  std::vector<T> shuffle(std::vector<T> v) {
     std::vector<T> shuffled;
     int i;
-    while( v.size() > 0 ){
-      i = uniform_int_distribution<int>{0, (int) v.size()-1}(engine);
+    while (v.size() > 0) {
+      i = uniform_int_distribution<int>{ 0, (int)v.size() - 1 }(engine);
       shuffled.push_back(v[i]);
-      v.erase(v.begin()+i);
+      v.erase(v.begin() + i);
     }
     return shuffled;
   }
@@ -159,8 +161,8 @@ public:
 
 
 /////////////////////////////// QUIZ_GRADE
-double mapping( double x, double old_min, double old_max, double new_min, double new_max){
-  return (x-old_min)/(old_max-old_min)*(new_max-new_min)+new_min;
+double mapping(double x, double old_min, double old_max, double new_min, double new_max) {
+  return (x - old_min) / (old_max - old_min)*(new_max - new_min) + new_min;
 }
 
 
@@ -191,8 +193,8 @@ string grade2outcome(vector<double> thresholds, double grade) {
 class Question_param {
 public:
   int repetitions, correct, wrong, blank;
-  std::vector<std::pair<int,int> > pos_map; // { a , b } a = serial, b = question index
-  Question_param(){
+  std::vector<std::pair<int, int> > pos_map; // { a , b } a = serial, b = question index
+  Question_param() {
     repetitions = 0;
     correct = 0;
     wrong = 0;
@@ -200,16 +202,16 @@ public:
   }
 };
 
-double binomial_coeff(int n, int k){
+double binomial_coeff(int n, int k) {
   double bin = 1;
-  for(int i= 0; i<k; i++){
-    bin *= (double) (n-i)/(k-i);
+  for (int i = 0; i < k; i++) {
+    bin *= (double)(n - i) / (k - i);
   }
   return bin;
 }
 
-double binomial_dist(int n, int k, double p){
-  return binomial_coeff(n,k)*pow(p,k)*pow(1-p,n-k);
+double binomial_dist(int n, int k, double p) {
+  return binomial_coeff(n, k)*pow(p, k)*pow(1 - p, n - k);
 }
 
 
