@@ -86,24 +86,44 @@ int main(int argc, char** argv) {
   // Create config object
   QueryConfig c(config_name, &call);
   c.parsefile();
-  if ( !c.check_params() ) exit(4);
+  if (!c.check_params()) exit(4);
 
   // Import serial file
   call.parse_serial(c.work_folder + "/" + c.serials_name);
-  cout << "Serial file    : " << c.serials_name << endl;
-  
+
   // Runtime branches
   switch (mode) {
-  // Student mode
+    // Student mode
   case MODE_STUDENT: {
     // finish parsing command line (argc > 3 for sure)
-    string student_name;
-    if (argc == 5) {
-      student_name = string(argv[3]) + "\t" + argv[4];
+    string students_filename;
+    vector<string> students_name;
+    if (argc >= 5) {
+      for (int i = 3; i < argc - 1; i += 2) {
+        students_name.push_back(string(argv[i]) + "\t" + argv[i + 1]);
+      }
+    }
+    else if (argc == 4) {
+      students_filename = argv[3];
+      string surname, name;
+      ifstream filein(students_filename);
+      if (!filein) {
+        cerr << "Students file " << students_filename << " not found. Quitting..." << endl;
+        exit(-2);
+      }
+      while (filein >> surname >> name) {
+        students_name.push_back(surname + "\t" + name);
+      }
+      filein.close();
+    }
+    else {
+      usage(argv[0]);
+      exit(-3);
     }
 
+    cout << "Serial file    : " << c.serials_name << endl;
     cout << "Topics file    : " << c.topics_name << endl;
-    cout << "Student        : " << student_name << endl;
+    cout << "Student number : " << students_name.size() << endl;
 
     // Create topic map
     auto topic_map = create_topic_map(c.work_folder + "/" + c.topics_name);
@@ -146,7 +166,7 @@ int main(int argc, char** argv) {
           this_exam->wrong++;
           // recover suggested topics (if any)
           string question_name = call.serials_map[call.exams[i].serial].second[j];
-          this_exam->topics.push_back( topic_map[question_name] );
+          this_exam->topics.push_back(topic_map[question_name]);
         }
       }
       auto top = &(this_exam->topics);
@@ -154,18 +174,30 @@ int main(int argc, char** argv) {
       top->erase(unique(top->begin(), top->end()), top->end());
     }
 
-    cout << "VOTO      : " << call_map[student_name].grade << endl;
-    cout << "CORRETTE  : " << call_map[student_name].correct << endl;
-    if(call_map[student_name].bonus ) cout << "BONUS     : " << call_map[student_name].bonus   << endl;
-    cout << "BIANCHE   : " << call_map[student_name].blank   << endl;
-    cout << "ERRATE    : " << call_map[student_name].wrong   << endl;
-    cout << "RIPASSARE : ";
-    for (auto t : call_map[student_name].topics)
-      if (t.size())
-        cout << endl << "\t- " << t;
-      else
-        cout << "No match";
-    cout << endl;
+    // Display results
+    int counter = 0;
+    for (auto s : students_name) {
+        cout << ++counter << "/" << students_name.size() << ")" << endl;
+      if (call_map.count(s)) {
+        cout << "STUDENTE  : " << s << endl;
+        cout << "VOTO      : " << call_map[s].grade << endl;
+        cout << "CORRETTE  : " << call_map[s].correct << endl;
+        if (call_map[s].bonus) cout << "BONUS     : " << call_map[s].bonus << endl;
+        cout << "BIANCHE   : " << call_map[s].blank << endl;
+        cout << "ERRATE    : " << call_map[s].wrong << endl;
+        cout << "RIPASSARE : ";
+        for (auto t : call_map[s].topics)
+          if (t.size())
+            cout << endl << "\t- " << t;
+          else
+            cout << "No match";
+        cout << endl << endl;
+      }
+      else {
+        cout << "No match for student : " << s << endl;
+      }
+    }
+
     break;
   }
   case MODE_SERIAL:
@@ -211,6 +243,7 @@ int main(int argc, char** argv) {
       }
 
       cout
+        << "Serial file    : " << c.serials_name << endl
         << "Serial number  : " << serial << endl
         << "Quiz number(s) : ";
       for (auto n : quiz_num) cout << n << "  ";
