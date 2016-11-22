@@ -128,6 +128,7 @@
     <ClCompile Include="..\..\src\quiz_grade.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\config.hpp" />
     <ClInclude Include="..\..\src\quiz_lib.hpp" />
   </ItemGroup>
   <ItemGroup>

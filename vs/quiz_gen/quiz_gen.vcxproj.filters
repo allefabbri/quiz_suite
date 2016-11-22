@@ -21,6 +21,9 @@
     <ClInclude Include="..\..\src\quiz_lib.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\config.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\quiz_gen.cpp">
