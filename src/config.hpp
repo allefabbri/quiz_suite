@@ -21,6 +21,7 @@ public:
   // common
   string config_name;
   string grades_name, serials_name, work_folder;
+  Call * callptr;
 
   // gen
   int exam_number, starting_serial, random_seed;
@@ -33,7 +34,6 @@ public:
   bool is_call_bugged;
 
   // correct
-  Call * callptr;
   vector<double> thresholds;
   bool make_public_correction;
 
@@ -51,6 +51,9 @@ public:
     // some std values
     exam_number = -1;
     callptr->score_scale = -1.0;
+    starting_serial = -1;
+    random_seed = -1;
+    choices_number = -1;
     // parse config file
     string key, equal, value;
     ifstream filein(config_name);
@@ -247,10 +250,6 @@ public:
     }
     if (random_seed == -1) {
       cout << "RANDOM SEED unset. Edit " << config_name << endl;
-      ret = false;
-    }
-    if (callptr->score_scale == -1.0) {
-      cout << "SCORE SCALE unset. Edit " << config_name << endl;
       ret = false;
     }
     if (work_folder == "") {
