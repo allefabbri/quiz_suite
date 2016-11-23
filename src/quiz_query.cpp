@@ -15,11 +15,12 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include "quiz_lib.hpp"
-#include "config.hpp"
+#include "quiz_lib2.hpp"
 
-constexpr char MODE_STUDENT = 0;
-constexpr char MODE_SERIAL  = 1;
+enum {
+  MODE_STUDENT = 0,
+  MODE_SERIAL  = 1
+};
 
 constexpr int MAJOR = 2;
 constexpr int MINOR = 0;
@@ -81,17 +82,16 @@ int main(int argc, char** argv) {
   int serial;
   vector<int> quiz_num;
   string quiz_name = "";
-  Call call;
+  Call2<GradedExam> call;
 
   // Create config object
-  QueryConfig c(config_name, &call);
+  QueryConfig<decltype(call)> c(config_name, &call);
   c.parsefile();
   if (!c.check_params()) exit(4);
 
-  // Import serial file
-  call.parse_serial(c.work_folder + "/" + c.serials_name);
+  // Parse serial file
+  if (!call.parse_serial(&c))   exit(6);
 
-  // Runtime branches
   switch (mode) {
     // Student mode
   case MODE_STUDENT: {
@@ -125,74 +125,45 @@ int main(int argc, char** argv) {
     cout << "Topics file    : " << c.topics_name << endl;
     cout << "Student number : " << students_name.size() << endl;
 
-    // Create topic map
-    auto topic_map = create_topic_map(c.work_folder + "/" + c.topics_name);
-    if (topic_map.size() == 0) {
-      cerr << "Failed to load topic map, size " << topic_map.size() << endl;
-      exit(55);
-    }
-
-    // Importing grades file
-    string line;
-    vector<string> tokens;
-    ifstream filein(c.work_folder + "/" + c.grades_name);
-    if (!filein) {
-      cout << "GRADES file " << c.grades_name << " not found. Quitting..." << endl;
-      exit(4);
-    }
-    while (getline(filein, line)) {
-      trim(line);
-      split(tokens, line, is_any_of("\t"), token_compress_on);
-      if (tokens.size() > 5) call.exams.push_back(Exam(tokens, 'c'));
-    }
-    filein.close();
-
-    // Map construction
-    map<string, Outcome> call_map;
-    for (size_t i = 0; i < call.exams.size(); i++) {
-      auto this_exam = &(call_map[call.exams[i].surname + "\t" + call.exams[i].name]);
-      this_exam->grade = call.exams[i].grade_d;
-      for (size_t j = 0; j < call.exams[i].answers.size(); j++) {
-        if (call.exams[i].solutions[j] == '-') {
-          this_exam->bonus++;
-        }
-        else if (call.exams[i].answers[j] == '-') {
-          this_exam->blank++;
-        }
-        else if (call.exams[i].answers[j] == call.exams[i].solutions[j]) {
-          this_exam->correct++;
-        }
-        else {
-          this_exam->wrong++;
-          // recover suggested topics (if any)
-          string question_name = call.serials_map[call.exams[i].serial].second[j];
-          this_exam->topics.push_back(topic_map[question_name]);
-        }
-      }
-      auto top = &(this_exam->topics);
-      sort(top->begin(), top->end());
-      top->erase(unique(top->begin(), top->end()), top->end());
-    }
+    // Call2 operations
+    if (!call.parse_grades(&c))   exit(5);
+    if (!call.make_topic_map(&c)) exit(7);
+    if (!call.make_outcome_map()) exit(8);
 
     // Display results
     int counter = 0;
     for (auto s : students_name) {
-        cout << ++counter << "/" << students_name.size() << ")" << endl;
-      if (call_map.count(s)) {
+      cout << ++counter << "/" << students_name.size() << ")" << endl;
+      auto om = &(call.outcome_map);
+      if (om->count(s)) {
         cout << "STUDENTE  : " << s << endl;
-        cout << "VOTO      : " << call_map[s].grade << endl;
-        cout << "CORRETTE  : " << call_map[s].correct << endl;
-        if (call_map[s].bonus) cout << "BONUS     : " << call_map[s].bonus << endl;
-        cout << "BIANCHE   : " << call_map[s].blank << endl;
-        cout << "ERRATE    : " << call_map[s].wrong << endl;
+        cout << "VOTO      : " << om->at(s).grade << endl;
+        cout << "CORRETTE  : " << om->at(s).correct << endl;
+        if (om->at(s).bonus) cout << "BONUS     : " << om->at(s).bonus << endl;
+        cout << "BIANCHE   : " << om->at(s).blank << endl;
+        cout << "ERRATE    : " << om->at(s).wrong << endl;
         cout << "RIPASSARE : ";
-        for (auto t : call_map[s].topics)
+        for (auto t : om->at(s).topics)
           if (t.size())
             cout << endl << "\t- " << t;
           else
             cout << "No match";
         cout << endl << endl;
-      }
+//        if (call.outcome_map.count(s)) {
+//          cout << "STUDENTE  : " << s << endl;
+//          cout << "VOTO      : " << call.outcome_map[s].grade << endl;
+//          cout << "CORRETTE  : " << call.outcome_map[s].correct << endl;
+//          if (call.outcome_map[s].bonus) cout << "BONUS     : " << call.outcome_map[s].bonus << endl;
+//          cout << "BIANCHE   : " << call.outcome_map[s].blank << endl;
+//          cout << "ERRATE    : " << call.outcome_map[s].wrong << endl;
+//          cout << "RIPASSARE : ";
+//          for (auto t : call.outcome_map[s].topics)
+//            if (t.size())
+//              cout << endl << "\t- " << t;
+//            else
+//              cout << "No match";
+//          cout << endl << endl;
+        }
       else {
         cout << "No match for student : " << s << endl;
       }

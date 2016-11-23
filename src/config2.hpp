@@ -17,13 +17,15 @@
 #ifndef _QUIZ_CONFIG_HPP_
 #define _QUIZ_CONFIG_HPP_
 
+using namespace std;
+
 ///////////////// CONFIG abstract class
-class BaseConfig {
+template<typename Call_t> class BaseConfig {
 public:
   // common
   string config_name;
   string grades_name, serials_name, work_folder;
-  Call * callptr;
+  Call_t * callptr;
 
   // gen
   int exam_number, starting_serial, random_seed;
@@ -47,7 +49,6 @@ public:
   string topics_name;
 
   BaseConfig() {};
-  BaseConfig(string _config_name) : config_name(_config_name) {};
   
   void parsefile(){
     // some std values
@@ -171,9 +172,9 @@ public:
 
 
 ///////////////// CONFIG for quiz_gen
-class GenConfig : public BaseConfig {
+template<typename Call_t> class GenConfig : public BaseConfig<Call_t> {
 public:
-  GenConfig(string _config_name, Call * _callptr) {
+  GenConfig(string _config_name, Call_t * _callptr) {
     config_name = _config_name;
     callptr = _callptr;
     if (config_name == "-conf_t") {
@@ -268,9 +269,9 @@ public:
 
 
 ///////////////// CONFIG for quiz_grade
-class GradeConfig : public BaseConfig {
+template<typename Call_t> class GradeConfig : public BaseConfig<Call_t> {
 public:
-  GradeConfig(string _config_name, Call * _callptr) {
+  GradeConfig(string _config_name, Call_t * _callptr) {
     config_name = _config_name;
     callptr = _callptr;
     if (config_name == "-conf_t") {
@@ -336,9 +337,9 @@ public:
 
 
 ///////////////// CONFIG for quiz_correct
-class CorrectionConfig : public BaseConfig {
+template<typename Call_t> class CorrectionConfig : public BaseConfig<Call_t> {
 public:
-  CorrectionConfig(string _config_name, Call * _callptr) {
+  CorrectionConfig(string _config_name, Call_t * _callptr) {
     config_name = _config_name;
     callptr = _callptr;
     if (config_name == "-conf_t") {
@@ -407,9 +408,9 @@ public:
 
 
 ///////////////// CONFIG for quiz_stats
-class StatsConfig : public BaseConfig {
+template<typename Call_t> class StatsConfig : public BaseConfig<Call_t> {
 public:
-  StatsConfig(string _config_name, Call * _callptr) {
+  StatsConfig(string _config_name, Call_t * _callptr) {
     config_name = _config_name;
     callptr = _callptr;
     if (config_name == "-conf_t") {
@@ -456,9 +457,9 @@ public:
 
 
 ///////////////// CONFIG for quiz_query
-class QueryConfig : public BaseConfig {
+template<typename Call_t> class QueryConfig : public BaseConfig<Call_t> {
 public:
-  QueryConfig(string _config_name, Call * _callptr){
+  QueryConfig(string _config_name, Call_t * _callptr){
     config_name = _config_name;
     callptr = _callptr;
     if (config_name == "-conf_t") {

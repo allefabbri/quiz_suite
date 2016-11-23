@@ -14,6 +14,8 @@
 * You should have received a copy of the GNU General Public License     *
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
+#ifndef _QUIZ_LIB_HPP_
+#define _QUIZ_LIB_HPP_
 
 #include <iostream>
 #include <fstream>
@@ -221,6 +223,9 @@ public:
   int correct, wrong, blank, bonus;
   double grade;
   vector<string> topics;
+  Outcome() : correct(0), wrong(0), blank(0), bonus(0) {};
+
+  // TODO vector<pair<int, string>> topics2; // [ { wrong_question_number , "Suggested topic" } ]
 };
 
 // creates a topic map { "question name" , "Suggested topics" }
@@ -245,3 +250,5 @@ map<string, string> create_topic_map(string filename) {
 
   return map;
 }
+
+#endif
