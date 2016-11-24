@@ -18,6 +18,9 @@
 #include "quiz_config.hpp"
 #include "quiz_classes.hpp"
 
+typedef Call<GradedExam>       StatsCall;
+typedef GradeConfig<StatsCall> StatsConf;
+
 constexpr int MAJOR = 2;
 constexpr int MINOR = 1;
 
@@ -51,10 +54,10 @@ int main(int argc, char ** argv) {
   int exam_number = 0;
   size_t pad_name = 0;
   map<int, int> pardon_bins;
-  Call<GradedExam> call;
-
+  
   // Create config
-  StatsConfig<decltype(call)> c(config_name, &call);
+  StatsCall call;
+  StatsConf c(config_name, &call);
   c.parsefile();
   if (!c.check_params()) exit(4);
 

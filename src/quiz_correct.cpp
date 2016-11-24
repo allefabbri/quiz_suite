@@ -18,6 +18,9 @@
 #include "quiz_config.hpp"
 #include "latex_utils.hpp"
 
+typedef Call<GradedExam>                 CorrectionCall;
+typedef CorrectionConfig<CorrectionCall> CorrectionConf;
+
 constexpr int MAJOR = 2;
 constexpr int MINOR = 1;
 
@@ -47,10 +50,10 @@ int main(int argc, char ** argv) {
   // Variables and containers
   string line, file_path;
   vector<string> tokens;
-  Call<GradedExam> call;
 
   // Create config
-  CorrectionConfig<decltype(call)> c(config_name, &call);
+  CorrectionCall call;
+  CorrectionConf c(config_name, &call);
   c.parsefile();
   if (!c.check_params()) exit(4);
 

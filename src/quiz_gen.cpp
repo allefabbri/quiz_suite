@@ -23,6 +23,10 @@
 #include "quiz_config.hpp"
 #include "latex_utils.hpp"
 
+typedef Call<BaseExam>     GenCall;
+typedef GenConfig<GenCall> GenConf;
+
+
 using namespace boost::filesystem;
 
 constexpr int MAJOR = 2;

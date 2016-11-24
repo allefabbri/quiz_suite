@@ -18,6 +18,9 @@
 #include "quiz_config.hpp"
 #include "quiz_classes.hpp"
 
+typedef Call<PendingExam>      GradeCall;
+typedef GradeConfig<GradeCall> GradeConf;
+
 constexpr int MAJOR = 2;
 constexpr int MINOR = 1;
 
@@ -57,10 +60,10 @@ int main(int argc, char ** argv) {
   string line, file_path;
   vector<string> tokens;
   map<int, vector<int> > bugs_map, healthy_map;
-  Call<PendingExam> call;
 
-  // Create config object
-  GradeConfig<decltype(call)> c(config_name, &call);
+  // Create config and call object
+  GradeCall call;
+  GradeConf c(config_name, &call);
   c.parsefile();
   if (!c.check_params()) exit(4);
 

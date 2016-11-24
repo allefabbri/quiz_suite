@@ -16,9 +16,9 @@
 ************************************************************************/
 
 #include "quiz_config.hpp"
-#include "quiz_classes.hpp"
+#include "quiz_classes.hpp"  
 
-typedef Call<GradedExam> QueryCall;
+typedef Call<GradedExam>       QueryCall;
 typedef QueryConfig<QueryCall> QueryConf;
 
 enum {
