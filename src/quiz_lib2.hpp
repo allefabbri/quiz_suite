@@ -87,6 +87,12 @@ public:
   }
 };
 
+/////////////////////////////// QUIZ_GRADE
+double mapping(double x, double old_min, double old_max, double new_min, double new_max) {
+  return (x - old_min) / (old_max - old_min)*(new_max - new_min) + new_min;
+}
+
+
 /////////////////////////////// 
 class Outcome {
 public:
@@ -202,6 +208,29 @@ public:
       if (tokens.size() > 5) exams.push_back(Exam_t(tokens));
     }
     filein.close();
+    return ret;
+  }
+
+  // Parse results file with different purposes
+  // according to the template specification
+  // line sample : 18 ABCD... ROSSI MARIO
+  template<typename Conf_t> bool parse_results(const Conf_t * confptr) {
+    bool ret = true;
+    string line, file_path;
+    vector<string> tokens;
+    file_path = confptr->work_folder + "/" + confptr->results_name;
+    ifstream filein(file_path);
+    if (!filein) {
+      cout << "RESULTS file " << file_path << " not found. Quitting..." << endl;
+      ret = false;
+    }
+    while (getline(filein, line)) {
+      trim(line);
+      split(tokens, line, is_any_of("\t"), token_compress_on);
+      if (tokens.size() == 4) exams.push_back(Exam_t(tokens));    // 'g' is for grading mode
+    }
+    filein.close();
+
     return ret;
   }
 

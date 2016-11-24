@@ -15,8 +15,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include "quiz_lib.hpp"
-#include "config.hpp"
+#include "quiz_lib2.hpp"
 
 constexpr int MAJOR = 2;
 constexpr int MINOR = 0;
@@ -57,28 +56,18 @@ int main(int argc, char ** argv) {
   string line, file_path;
   vector<string> tokens;
   map<int, vector<int> > bugs_map, healthy_map;
-  Call call;
+  Call2<PendingExam> call;
 
   // Create config object
-  GradeConfig c(config_name, &call);
+  GradeConfig<decltype(call)> c(config_name, &call);
   c.parsefile();
   if (!c.check_params()) exit(4);
 
-  // Import RESULTS handwritten, structure { serials, answers, surname, name }
-  ifstream filein(c.work_folder + "/" + c.results_name);
-  if (!filein) {
-    cout << "RESULTS file " << c.results_name << " not found. Quitting..." << endl;
-    exit(4);
-  }
-  while (getline(filein, line)) {
-    trim(line);
-    split(tokens, line, is_any_of("\t"), token_compress_on);
-    if (tokens.size() == 4) call.exams.push_back(Exam(tokens, 'g'));    // 'g' is for grading mode
-  }
-  filein.close();
+  // Import SERIALS file
+  if (!call.parse_serial(&c)) exit(5);
 
-  // Import SERIALS file whose layout is 
-  call.parse_serial(c.work_folder + "/" + c.serials_name);
+  // Importing GRADES file
+  if (!call.parse_results(&c)) exit(6);
 
   // Associate to each exam its solutions
   for (auto &exam : call.exams) {
@@ -101,7 +90,7 @@ int main(int argc, char ** argv) {
   if (c.is_call_bugged) {
     // Import WRONG QUESTION list file
     vector<string> error_list;
-    filein.open(c.work_folder + "/" + c.bugs_name);
+    ifstream filein(c.work_folder + "/" + c.bugs_name);
     if (!filein) {
       cout << "BUGS file " << c.bugs_name << " not found. Quitting..." << endl;
       exit(4);
@@ -109,7 +98,7 @@ int main(int argc, char ** argv) {
     while (filein >> line) error_list.push_back(line);
     filein.close();
 
-    // Creating the MAPS
+    // Creating BUGS and HEALTHY MAP
     for (auto s_it = call.serials_map.begin(); s_it != call.serials_map.end(); s_it++) {
       for (int i = 0; i < s_it->second.second.size(); i++) {
         for (auto err : error_list) {
