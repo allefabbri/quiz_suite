@@ -14,18 +14,17 @@
 * You should have received a copy of the GNU General Public License     *
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
+#include "quiz_config.hpp"
 
 #include <algorithm>
 #include <regex>
 
 #include <boost/filesystem.hpp>
 
-#include "quiz_config.hpp"
 #include "latex_utils.hpp"
 
 typedef Call<BaseExam>     GenCall;
 typedef GenConfig<GenCall> GenConf;
-
 
 using namespace boost::filesystem;
 

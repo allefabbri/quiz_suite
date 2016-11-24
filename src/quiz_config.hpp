@@ -17,6 +17,10 @@
 #ifndef _QUIZ_CONFIG_HPP_
 #define _QUIZ_CONFIG_HPP_
 
+#ifdef _DEBUG
+#define _SCL_SECURE_NO_WARNINGS
+#endif
+
 #include <iostream>
 #include <vector>
 
