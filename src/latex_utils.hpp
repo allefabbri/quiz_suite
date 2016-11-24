@@ -14,12 +14,12 @@
 * You should have received a copy of the GNU General Public License     *
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
-#ifndef _LATEX_HEADERS_2_HPP_
-#define _LATEX_HEADERS_2_HPP_
+#ifndef _LATEX_UTILS_HPP_
+#define _LATEX_UTILS_HPP_
 
 #include <sstream>
 
-#include "quiz_lib.hpp"
+#include "quiz_classes.hpp"
 
 //////////////////////////////////////////// GENERAL
 const char * latex_header = R"(

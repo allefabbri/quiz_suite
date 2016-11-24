@@ -15,7 +15,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include "quiz_lib.hpp"
+#include "quiz_classes.hpp"
 
 enum {
   MODE_STUDENT = 0,
@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
   int serial;
   vector<int> quiz_num;
   string quiz_name = "";
-  Call2<GradedExam> call;
+  Call<GradedExam> call;
 
   // Create config object
   QueryConfig<decltype(call)> c(config_name, &call);

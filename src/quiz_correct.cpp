@@ -15,7 +15,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include "latex_headers.hpp"
+#include "latex_utils.hpp"
 
 constexpr int MAJOR = 2;
 constexpr int MINOR = 1;
@@ -46,7 +46,7 @@ int main(int argc, char ** argv) {
   // Variables and containers
   string line, file_path;
   vector<string> tokens;
-  Call2<GradedExam> call;
+  Call<GradedExam> call;
 
   // Create config
   CorrectionConfig<decltype(call)> c(config_name, &call);

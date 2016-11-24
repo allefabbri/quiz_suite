@@ -15,7 +15,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include "quiz_lib.hpp"
+#include "quiz_classes.hpp"
 
 constexpr int MAJOR = 2;
 constexpr int MINOR = 1;
@@ -50,7 +50,7 @@ int main(int argc, char ** argv) {
   int exam_number = 0;
   size_t pad_name = 0;
   map<int, int> pardon_bins;
-  Call2<GradedExam> call;
+  Call<GradedExam> call;
 
   // Create config
   StatsConfig<decltype(call)> c(config_name, &call);

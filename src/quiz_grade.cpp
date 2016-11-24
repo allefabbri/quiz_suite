@@ -15,7 +15,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include "quiz_lib.hpp"
+#include "quiz_classes.hpp"
 
 constexpr int MAJOR = 2;
 constexpr int MINOR = 1;
@@ -56,7 +56,7 @@ int main(int argc, char ** argv) {
   string line, file_path;
   vector<string> tokens;
   map<int, vector<int> > bugs_map, healthy_map;
-  Call2<PendingExam> call;
+  Call<PendingExam> call;
 
   // Create config object
   GradeConfig<decltype(call)> c(config_name, &call);

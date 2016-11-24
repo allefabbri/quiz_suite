@@ -14,8 +14,8 @@
 * You should have received a copy of the GNU General Public License     *
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
-#ifndef _QUIZ_LIB2_HPP_
-#define _QUIZ_LIB2_HPP_
+#ifndef _QUIZ_CLASSES_HPP_
+#define _QUIZ_CLASSES_HPP_
 
 #include <iostream>
 #include <fstream>
@@ -25,7 +25,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "config.hpp"
+#include "quiz_classes.hpp"
 
 using namespace std;
 using namespace boost::algorithm;
@@ -35,10 +35,14 @@ class BaseQuestion {
 public:
   string path, name;
   string text;
-  vector<pair<string, int> > answers;
+  vector<pair<string, int> > answers;    // { answer , correctness bool value }
 };
 
-/////////////////////////////// QUESTION classes
+
+
+/////////////////////////////// EXAM classes
+
+// An empty exam, for generating 
 class BaseExam {
 public:
   int serial;                                               // for generating/grading/corrections
@@ -50,6 +54,25 @@ public:
   BaseExam() {};
 };
 
+// A student answered exam, for grading 
+class PendingExam : public BaseExam {
+public:
+  PendingExam(vector<string> tokens) {
+    if (tokens.size() > 3) {
+      // sample line : 22 ABCD... Rossi Mario
+      serial = stoi(tokens[0]);
+      answers = tokens[1];
+      surname = tokens[2];
+      name = tokens[3];
+      student = surname + "\t" + name;
+      grade = 0;
+      grade_d = 0.0;
+      score = pardon_score = 0.0;
+    }
+  }
+};
+
+// A graded exam, for correction/stats/query
 class GradedExam : public BaseExam {
 public:
   GradedExam(vector<string> tokens) {
@@ -70,117 +93,21 @@ public:
   }
 };
 
-class PendingExam : public BaseExam {
-public:
-  PendingExam(vector<string> tokens) {
-    if (tokens.size() > 3) {
-      // sample line : 22 ABCD... Rossi Mario
-      serial = stoi(tokens[0]);
-      answers = tokens[1];
-      surname = tokens[2];
-      name = tokens[3];
-      student = surname + "\t" + name;
-      grade = 0;
-      grade_d = 0.0;
-      score = pardon_score = 0.0;
-    }
-  }
-};
-
-/////////////////////////////// QUIZ_GRADE
-double mapping(double x, double old_min, double old_max, double new_min, double new_max) {
-  return (x - old_min) / (old_max - old_min)*(new_max - new_min) + new_min;
-}
 
 
-/////////////////////////////// QUIZ_GEN Randomizer
-class Rnd {
-public:
-  default_random_engine engine;
-  uniform_int_distribution<int> u_int;
-  Rnd(unsigned int s) {
-    engine.seed(s);
-  };
-  int operator() (int min, int max) {
-    return uniform_int_distribution<int>{min, max}(engine);
-  };
-  template<class T>
-  std::vector<T> shuffle(std::vector<T> v) {
-    std::vector<T> shuffled;
-    int i;
-    while (v.size() > 0) {
-      i = uniform_int_distribution<int>{ 0, (int)v.size() - 1 }(engine);
-      shuffled.push_back(v[i]);
-      v.erase(v.begin() + i);
-    }
-    return shuffled;
-  }
-};
+/////////////////////////////// CALL classes
 
-
-/////////////////////////////// 
-class Outcome {
-public:
-  int correct, wrong, blank, bonus;
-  double grade;
-  vector<string> topics;
-  Outcome() : correct(0), wrong(0), blank(0), bonus(0) {};
-
-  // TODO vector<pair<int, string>> topics2; // [ { wrong_question_number , "Suggested topic" } ]
-};
-
-/////////////////////////////// QUIZ_CORRECTIONS
-string grade2outcome(vector<double> thresholds, double grade) {
-  string outcome;
-  if (thresholds.size() == 1) {
-    // admitted / rejected
-    outcome = "size 1 coming soon";
-  }
-  else if (thresholds.size() == 2) {
-    if (grade < thresholds[0]) outcome = "Non \\ Ammesso";
-    else if (grade < thresholds[1]) outcome = "Ammesso \\ con \\ riserva";
-    else outcome = "Ammesso";
-  }
-  else if (thresholds.size() == 4) {
-    // a,b,c,d,nc
-    outcome = "size 4 coming soon";
-  }
-  else {
-    outcome = "size unknown coming soon";
-  }
-  return outcome;
-}
-
-/////////////////////////////// QUIZ_STATS 
-class Question_param {
-public:
-  int repetitions, correct, wrong, blank;
-  std::vector<std::pair<int, int> > pos_map; // { a , b } a = serial, b = question index
-  Question_param() : repetitions(0), correct(0), wrong(0), blank(0) {};
-};
-
-double binomial_coeff(int n, int k) {
-  double bin = 1;
-  for (int i = 0; i < k; i++) {
-    bin *= (double)(n - i) / (k - i);
-  }
-  return bin;
-}
-
-double binomial_dist(int n, int k, double p) {
-  return binomial_coeff(n, k)*pow(p, k)*pow(1 - p, n - k);
-}
-
-template<typename Exam_t> class Call2 {
+template<typename Exam_t> class Call {
 public:
   //////// Vars and containers
   string name;                                              // general purpose
   string date, course, tag, cdl, commission;                // for latex headers
   double score_scale;
-  vector<Exam_t> exams;
+  vector<Exam_t> exams;                                     // contains the possible exam types
   map<int, pair<string, vector<string> > > serials_map;     // { serial, { solutions, {questions names, ...} } }
 
-  //////// Methods
+
+  //////// SERIALS
   // Import single line from SERIALS file
   // line sample : 34 question_name1 question_name2 ... question_nameN ABCD...
   void add_serial(const vector<string> &tokens) {
@@ -189,7 +116,7 @@ public:
       serials_map[stoi(tokens[0])].second.push_back(tokens[i]);
     }
   }
-  // Import SERIALS file
+  // Import SERIALS file to map
   // layout { serial number, question_name1, question_name2, ... , question_nameN, correct_answer }
   template<typename Conf_t> bool parse_serial(const Conf_t * confptr) {
     bool ret = true;
@@ -205,39 +132,15 @@ public:
       trim(line);
       if (line[0] == '%') continue;
       split(tokens, line, is_any_of("\t "), token_compress_on);
-      if (tokens.size() > 6) {   // to skip segfault causing lines, if any
-        add_serial(tokens);
-      }
-    }
-    filein.close();
-
-    return ret;
-  }
-
-  // Parse grades file with different purposes
-  // according to the template specification
-  // line sample : 18 ABCD... ABCD... 27.33 27.33 0.00 28.00 28 ROSSI MARIO
-  template<typename Conf_t> bool parse_grades(const Conf_t * confptr) {
-    bool ret = true;
-    string line, file_path;
-    vector<string> tokens;
-    file_path = confptr->work_folder + "/" + confptr->grades_name;
-    ifstream filein(file_path);
-    if (!filein) {
-      cerr << "GRADES file " << file_path << " not found. Quitting..." << endl;
-      ret = false;
-    }
-    while (getline(filein, line)) {
-      trim(line);
-      split(tokens, line, is_any_of("\t"), token_compress_on);
-      if (tokens.size() > 5) exams.push_back(Exam_t(tokens));
+      if (tokens.size() > 6) add_serial(tokens);   // to skip segfault causing lines, if any
     }
     filein.close();
     return ret;
   }
 
-  // Parse results file with different purposes
-  // according to the template specification
+
+  //////// RESULTS
+  // Parse results file and fill exams vector
   // line sample : 18 ABCD... ROSSI MARIO
   template<typename Conf_t> bool parse_results(const Conf_t * confptr) {
     bool ret = true;
@@ -252,16 +155,42 @@ public:
     while (getline(filein, line)) {
       trim(line);
       split(tokens, line, is_any_of("\t"), token_compress_on);
-      if (tokens.size() == 4) exams.push_back(Exam_t(tokens));    // 'g' is for grading mode
+      if (tokens.size() == 4) exams.push_back(Exam_t(tokens));
     }
     filein.close();
-
     return ret;
   }
 
+
+  //////// GRADES
+  // Parse grades file and fill exams vector
+  // line sample : 18 ABCD... ABCD... 27.33 27.33 0.00 28.00 28 ROSSI MARIO
+  template<typename Conf_t> bool parse_grades(const Conf_t * confptr) {
+    bool ret = true;
+    string line, file_path;
+    vector<string> tokens;
+    file_path = confptr->work_folder + "/" + confptr->grades_name;
+    ifstream filein(file_path);
+    if (!filein) {
+      cerr << "GRADES file " << file_path << " not found. Quitting..." << endl;
+      ret = false;
+    }
+    while (getline(filein, line)) {
+      trim(line);
+      split(tokens, line, is_any_of("\t"), token_compress_on);
+      if (tokens.size() == 10) exams.push_back(Exam_t(tokens));
+    }
+    filein.close();
+    return ret;
+  }
+
+
+  //////// TOPICS
   // Creates topic map
-  // 
+  // line sample : quiz-1-name Suggested topics
+  // map sample : { "quiz-1-name" , "Suggested topics" } 
   map<string, string> topic_map;
+  
   template<typename Conf_t> bool make_topic_map(const Conf_t * configptr) {
     bool ret = true;
     map<string, string> map;
@@ -286,44 +215,39 @@ public:
     return ret;
   }
 
+
+  //////// OUTCOME
   // Creates outcome map
-  // 
+  // layout : { "quiz-1-name" , Outcome object };
   map<string, Outcome> outcome_map;
+
   bool make_outcome_map() {
     bool ret = true;
-    for (size_t i = 0; i < exams.size(); i++) {
-
+    for (const auto & e : exams) {
       Outcome outcome;
-      outcome.grade = exams[i].grade_d;
-      for (size_t j = 0; j < exams[i].answers.size(); j++) {
-        if (exams[i].solutions[j] == '-') {
-          outcome.bonus++;
-        }
-        else if (exams[i].answers[j] == '-') {
-          outcome.blank++;
-        }
-        else if (exams[i].answers[j] == exams[i].solutions[j]) {
-          outcome.correct++;
-        }
+      outcome.grade = e.grade_d;
+      for (size_t j = 0; j < e.answers.size(); j++) {
+        if (e.solutions[j] == '-')               outcome.bonus++;
+        else if (e.answers[j] == '-')            outcome.blank++;
+        else if (e.answers[j] == e.solutions[j]) outcome.correct++;
         else {
           outcome.wrong++;
           // recover suggested topics (if any)
-          string question_name = serials_map[exams[i].serial].second[j];
+          string question_name = serials_map[e.serial].second[j];
           outcome.topics.push_back(topic_map[question_name]);
         }
       }
-      // Remove in duplicates duplicates
+      // Remove duplicates
       auto top = &(outcome.topics);
       sort(top->begin(), top->end());
       top->erase(unique(top->begin(), top->end()), top->end());
-
+      // Save element to map
       outcome_map[exams[i].student] = outcome;
     }
     if (outcome_map.size() == 0) {
       cerr << "TOPIC null map, size " << outcome_map.size() << endl;
       ret = false;
     }
-
     return ret;
   }
 };

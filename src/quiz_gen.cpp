@@ -20,7 +20,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include "latex_headers.hpp"
+#include "latex_utils.hpp"
 
 using namespace boost::filesystem;
 
@@ -51,7 +51,7 @@ int main(int argc, char ** argv) {
   }
 
   // Create config
-  Call2<BaseExam> call;
+  Call<BaseExam> call;
   GenConfig<decltype(call)> c(config_name, &call);
   c.parsefile();
   if (!c.check_params()) exit(4);

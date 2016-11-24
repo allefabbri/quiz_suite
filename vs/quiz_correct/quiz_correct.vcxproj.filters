@@ -23,13 +23,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\quiz_lib.hpp">
+    <ClInclude Include="..\..\src\latex_utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\config.hpp">
+    <ClInclude Include="..\..\src\quiz_classes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\latex_headers.hpp">
+    <ClInclude Include="..\..\src\quiz_config.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\quiz_utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
