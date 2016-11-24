@@ -18,6 +18,9 @@
 #include "quiz_config.hpp"
 #include "quiz_classes.hpp"
 
+typedef Call<GradedExam> QueryCall;
+typedef QueryConfig<QueryCall> QueryConf;
+
 enum {
   MODE_STUDENT = 0,
   MODE_SERIAL  = 1
@@ -83,10 +86,10 @@ int main(int argc, char** argv) {
   int serial;
   vector<int> quiz_num;
   string quiz_name = "";
-  Call<GradedExam> call;
 
   // Create config object
-  QueryConfig<decltype(call)> c(config_name, &call);
+  QueryCall call;
+  QueryConf c(config_name, &call);
   c.parsefile();
   if (!c.check_params()) exit(4);
 
