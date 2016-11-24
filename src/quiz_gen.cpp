@@ -20,8 +20,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include "latex_headers.hpp"
-#include "config.hpp"
+#include "latex_headers2.hpp"
 
 using namespace boost::filesystem;
 
@@ -52,8 +51,8 @@ int main(int argc, char ** argv) {
   }
 
   // Create config
-  Call call;
-  GenConfig c(config_name, &call);
+  Call2<BaseExam> call;
+  GenConfig<decltype(call)> c(config_name, &call);
   c.parsefile();
   if (!c.check_params()) exit(4);
 
@@ -74,7 +73,7 @@ int main(int argc, char ** argv) {
     << "Database folder : " << c.db_folder << endl << endl << endl
     << "OPERATIONS PERFORMED" << endl;
 
-  // Browsing database
+  // DB 1 - Browsing database
   path p(c.db_folder);
   vector<vector <string> > db(c.slot_specs.size());
   int log_counter = 1;
@@ -109,7 +108,7 @@ int main(int argc, char ** argv) {
     cout << ex.what() << endl;
   }
 
-  // Sorting names, database size, safety size check loop
+  // DB 2 - Sorting names, database size, safety size check loop
   log << log_counter << ") Sorting database names " << endl; log_counter++;
   size_t database_size = 0;
   for (size_t i = 0; i < db.size(); ++i) {
@@ -121,11 +120,11 @@ int main(int argc, char ** argv) {
     sort(db[i].begin(), db[i].end());
   }
 
-  // Importing questions in organized database
-  vector<vector <Question> > database;
+  // DB 3 - Importing questions in organized database
+  vector<vector <BaseQuestion> > database;
   std::ifstream filein;
   for (size_t i = 0; i < db.size(); ++i) {
-    vector<Question> database_slot;
+    vector<BaseQuestion> database_slot;
     for (size_t j = 0; j < db[i].size(); j++) {
       string line;
       vector<string> all_lines;
@@ -143,9 +142,9 @@ int main(int argc, char ** argv) {
       filein.close();
 
       vector<string> tokens;
-      split(tokens, db[i][j], is_any_of(R"(/\)"), token_compress_on);
+      split(tokens, db[i][j], is_any_of("/\\"), token_compress_on);
 
-      Question q;
+      BaseQuestion q;
       q.path = db[i][j];
       q.name = tokens.back();
       q.text = all_lines[0];
@@ -165,7 +164,7 @@ int main(int argc, char ** argv) {
   log << log_counter << ") Generating the call" << endl; log_counter++;
   for (int i = 0; i < c.exam_number; i++) {
     log << log_counter << ") Generating exam " << i + 1 << " of " << c.exam_number << endl; log_counter++;
-    Exam exam;
+    BaseExam exam;
     exam.serial = c.starting_serial + i;
     // shuffling questions database
     for (auto slot : database) {

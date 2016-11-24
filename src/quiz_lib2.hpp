@@ -38,11 +38,11 @@ public:
   vector<pair<string, int> > answers;
 };
 
-
+/////////////////////////////// QUESTION classes
 class BaseExam {
 public:
   int serial;                                               // for generating/grading/corrections
-  vector<BaseQuestion> questions;                               // for generating
+  vector<BaseQuestion> questions;                           // for generating
   string answers, solutions, name, surname, student;        // for grading
   int grade;                                                // for grading/corrections
   double score, pardon_score, grade_d;                      // for grading/corrections
@@ -91,6 +91,31 @@ public:
 double mapping(double x, double old_min, double old_max, double new_min, double new_max) {
   return (x - old_min) / (old_max - old_min)*(new_max - new_min) + new_min;
 }
+
+
+/////////////////////////////// QUIZ_GEN Randomizer
+class Rnd {
+public:
+  default_random_engine engine;
+  uniform_int_distribution<int> u_int;
+  Rnd(unsigned int s) {
+    engine.seed(s);
+  };
+  int operator() (int min, int max) {
+    return uniform_int_distribution<int>{min, max}(engine);
+  };
+  template<class T>
+  std::vector<T> shuffle(std::vector<T> v) {
+    std::vector<T> shuffled;
+    int i;
+    while (v.size() > 0) {
+      i = uniform_int_distribution<int>{ 0, (int)v.size() - 1 }(engine);
+      shuffled.push_back(v[i]);
+      v.erase(v.begin() + i);
+    }
+    return shuffled;
+  }
+};
 
 
 /////////////////////////////// 

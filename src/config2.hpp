@@ -59,7 +59,7 @@ public:
     choices_number = -1;
     // parse config file
     string key, equal, value;
-    ifstream filein(config_name);
+    std::ifstream filein(config_name);
     if (!filein) {
       cerr << "Configuration file " << config_name << " not found. Quitting..." << endl;
       exit(3);
