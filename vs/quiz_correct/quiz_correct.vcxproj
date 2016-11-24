@@ -125,15 +125,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\config2.hpp" />
-    <ClInclude Include="..\..\src\latex_headers2.hpp" />
-    <ClInclude Include="..\..\src\quiz_lib2.hpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\src\quiz_correct.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\config.hpp" />
+    <ClInclude Include="..\..\src\latex_headers.hpp" />
+    <ClInclude Include="..\..\src\quiz_lib.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
