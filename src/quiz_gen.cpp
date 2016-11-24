@@ -20,6 +20,7 @@
 
 #include <boost/filesystem.hpp>
 
+#include "quiz_config.hpp"
 #include "latex_utils.hpp"
 
 using namespace boost::filesystem;

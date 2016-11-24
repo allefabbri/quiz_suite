@@ -17,6 +17,9 @@
 #ifndef _QUIZ_CONFIG_HPP_
 #define _QUIZ_CONFIG_HPP_
 
+#include <iostream>
+#include <vector>
+
 using namespace std;
 
 ///////////////// CONFIG abstract class
