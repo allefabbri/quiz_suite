@@ -87,6 +87,7 @@ public:
   }
 };
 
+/////////////////////////////// 
 class Outcome {
 public:
   int correct, wrong, blank, bonus;
@@ -96,6 +97,29 @@ public:
 
   // TODO vector<pair<int, string>> topics2; // [ { wrong_question_number , "Suggested topic" } ]
 };
+
+/////////////////////////////// QUIZ_CORRECTIONS
+string grade2outcome(vector<double> thresholds, double grade) {
+  string outcome;
+  if (thresholds.size() == 1) {
+    // admitted / rejected
+    outcome = "size 1 coming soon";
+  }
+  else if (thresholds.size() == 2) {
+    if (grade < thresholds[0]) outcome = "Non \\ Ammesso";
+    else if (grade < thresholds[1]) outcome = "Ammesso \\ con \\ riserva";
+    else outcome = "Ammesso";
+  }
+  else if (thresholds.size() == 4) {
+    // a,b,c,d,nc
+    outcome = "size 4 coming soon";
+  }
+  else {
+    outcome = "size unknown coming soon";
+  }
+  return outcome;
+}
+
 
 template<typename Exam_t> class Call2 {
 public:

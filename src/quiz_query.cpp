@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
     int counter = 0;
     for (auto s : students_name) {
       cout << ++counter << "/" << students_name.size() << ")" << endl;
-      auto om = &(call.outcome_map);
+      auto om = &(call.outcome_map);    // to shorten code
       if (om->count(s)) {
         cout << "STUDENTE  : " << s << endl;
         cout << "VOTO      : " << om->at(s).grade << endl;
@@ -149,21 +149,7 @@ int main(int argc, char** argv) {
           else
             cout << "No match";
         cout << endl << endl;
-//        if (call.outcome_map.count(s)) {
-//          cout << "STUDENTE  : " << s << endl;
-//          cout << "VOTO      : " << call.outcome_map[s].grade << endl;
-//          cout << "CORRETTE  : " << call.outcome_map[s].correct << endl;
-//          if (call.outcome_map[s].bonus) cout << "BONUS     : " << call.outcome_map[s].bonus << endl;
-//          cout << "BIANCHE   : " << call.outcome_map[s].blank << endl;
-//          cout << "ERRATE    : " << call.outcome_map[s].wrong << endl;
-//          cout << "RIPASSARE : ";
-//          for (auto t : call.outcome_map[s].topics)
-//            if (t.size())
-//              cout << endl << "\t- " << t;
-//            else
-//              cout << "No match";
-//          cout << endl << endl;
-        }
+      }
       else {
         cout << "No match for student : " << s << endl;
       }

@@ -15,8 +15,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include "latex_headers.hpp"
-#include "config.hpp"
+#include "latex_headers2.hpp"
 
 constexpr int MAJOR = 2;
 constexpr int MINOR = 0;
@@ -44,29 +43,18 @@ int main(int argc, char ** argv) {
     exit(2);
   }
 
-  // Create config
-  Call call;
-  CorrectionConfig c(config_name, &call);
-  c.parsefile();
-  if (!c.check_params()) exit(4);
-
   // Variables and containers
   string line, file_path;
   vector<string> tokens;
+  Call2<GradedExam> call;
+
+  // Create config
+  CorrectionConfig<decltype(call)> c(config_name, &call);
+  c.parsefile();
+  if (!c.check_params()) exit(4);
 
   // Importing grades file
-  file_path = c.work_folder + "/" + c.grades_name;
-  ifstream filein(file_path);
-  if (!filein) {
-    cout << "GRADES file " << file_path << " not found. Quitting..." << endl;
-    exit(4);
-  }
-  while (getline(filein, line)) {
-    trim(line);
-    split(tokens, line, is_any_of("\t"), token_compress_on);
-    if (tokens.size() > 5) call.exams.push_back(Exam(tokens, 'c'));
-  }
-  filein.close();
+  if (!call.parse_grades(&c)) exit(5);
 
   // Filling colors vector
   for (size_t i = 0; i < call.exams.size(); i++) {

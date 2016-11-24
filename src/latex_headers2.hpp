@@ -17,7 +17,7 @@
 
 #include <sstream>
 
-#include "quiz_lib.hpp"
+#include "quiz_lib2.hpp"
 
 //////////////////////////////////////////// GENERAL
 const char * latex_header = R"(
@@ -96,7 +96,7 @@ string exam_tex_table(int question_number) {
   return ss.str();
 }
 
-string exam_form(Call call) {
+template<typename Call_t> string exam_form(Call_t call) {
   stringstream ss;
   ss << latex_header << endl;
   ss << R"(%%% Print this on each test, before the questions
@@ -166,7 +166,7 @@ Commissione: )" << call.commission << R"( \hfill Bologna, )" << call.date << R"(
   return ss.str();
 }
 
-string database_form(Call call) {
+template<typename Call_t> string database_form(Call_t call) {
   stringstream ss;
   ss << latex_header << endl;
 
@@ -181,7 +181,7 @@ string database_form(Call call) {
 
 
 //////////////////////////////////////////// QUIZ_CORRECT
-string corrections_form(Call call) {
+template<typename Call_t> string corrections_form(Call_t call) {
   stringstream ss;
   ss << latex_header << endl;
   ss << R"(%%% Print this on each test, before the questions
@@ -222,7 +222,7 @@ string corrections_form(Call call) {
   return ss.str();
 }
 
-string public_form(Call call) {
+template<typename Call_t> string public_form(Call_t call) {
   stringstream ss;
   ss << latex_header << endl;
   ss << R"(%%% Print this on each test, before the questions
