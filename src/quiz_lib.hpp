@@ -196,12 +196,7 @@ class Question_param {
 public:
   int repetitions, correct, wrong, blank;
   std::vector<std::pair<int, int> > pos_map; // { a , b } a = serial, b = question index
-  Question_param() {
-    repetitions = 0;
-    correct = 0;
-    wrong = 0;
-    blank = 0;
-  }
+  Question_param() : repetitions(0), correct(0), wrong(0), blank(0) {};
 };
 
 double binomial_coeff(int n, int k) {

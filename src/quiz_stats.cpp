@@ -15,8 +15,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include "quiz_lib.hpp"
-#include "config.hpp"
+#include "quiz_lib2.hpp"
 
 constexpr int MAJOR = 2;
 constexpr int MINOR = 0;
@@ -51,29 +50,18 @@ int main(int argc, char ** argv) {
   int exam_number = 0;
   size_t pad_name = 0;
   map<int, int> pardon_bins;
-  Call call;
+  Call2<GradedExam> call;
 
   // Create config
-  StatsConfig c(config_name, &call);
+  StatsConfig<decltype(call)> c(config_name, &call);
   c.parsefile();
   if (!c.check_params()) exit(4);
 
-  // Import GRADES file
-  file_path = c.work_folder + "/" + c.grades_name;
-  ifstream filein(file_path);
-  if (!filein) {
-    cout << "GRADES file " << file_path << " not found. Quitting..." << endl;
-    exit(4);
-  }
-  while (getline(filein, line)) {
-    trim(line);
-    split(tokens, line, is_any_of("\t"), token_compress_on);
-    if (tokens.size() > 8) call.exams.push_back(Exam(tokens, 's'));
-  }
-  filein.close();
-
   // Import SERIALS file
-  call.parse_serial(c.work_folder + "/" + c.serials_name);
+  if (!call.parse_serial(&c)) exit(5);
+
+  // Importing GRADES file
+  if (!call.parse_grades(&c)) exit(6);
 
   // Evaluate stats
   for (auto exam : call.exams) {

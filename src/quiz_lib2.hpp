@@ -120,6 +120,25 @@ string grade2outcome(vector<double> thresholds, double grade) {
   return outcome;
 }
 
+/////////////////////////////// QUIZ_STATS 
+class Question_param {
+public:
+  int repetitions, correct, wrong, blank;
+  std::vector<std::pair<int, int> > pos_map; // { a , b } a = serial, b = question index
+  Question_param() : repetitions(0), correct(0), wrong(0), blank(0) {};
+};
+
+double binomial_coeff(int n, int k) {
+  double bin = 1;
+  for (int i = 0; i < k; i++) {
+    bin *= (double)(n - i) / (k - i);
+  }
+  return bin;
+}
+
+double binomial_dist(int n, int k, double p) {
+  return binomial_coeff(n, k)*pow(p, k)*pow(1 - p, n - k);
+}
 
 template<typename Exam_t> class Call2 {
 public:

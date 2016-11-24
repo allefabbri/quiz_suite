@@ -14,6 +14,8 @@
 * You should have received a copy of the GNU General Public License     *
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
+#ifndef _LATEX_HEADERS_2_HPP_
+#define _LATEX_HEADERS_2_HPP_
 
 #include <sstream>
 
@@ -262,3 +264,5 @@ template<typename Call_t> string public_form(Call_t call) {
 
   return ss.str();
 }
+
+#endif

@@ -53,7 +53,7 @@ int main(int argc, char ** argv) {
   c.parsefile();
   if (!c.check_params()) exit(4);
 
-  // Importing grades file
+  // Importing GRADES file
   if (!call.parse_grades(&c)) exit(5);
 
   // Filling colors vector

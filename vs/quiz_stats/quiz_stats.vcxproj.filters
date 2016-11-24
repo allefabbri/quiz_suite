@@ -15,10 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\quiz_lib.hpp">
+    <ClInclude Include="..\..\src\quiz_lib2.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\config.hpp">
+    <ClInclude Include="..\..\src\config2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\latex_headers2.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
