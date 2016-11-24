@@ -15,10 +15,10 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include "quiz_lib2.hpp"
+#include "quiz_lib.hpp"
 
 constexpr int MAJOR = 2;
-constexpr int MINOR = 0;
+constexpr int MINOR = 1;
 
 void usage(char * progname) {
   vector<string> tokens;

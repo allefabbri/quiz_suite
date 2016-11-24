@@ -19,7 +19,7 @@
 
 #include <sstream>
 
-#include "quiz_lib2.hpp"
+#include "quiz_lib.hpp"
 
 //////////////////////////////////////////// GENERAL
 const char * latex_header = R"(

@@ -20,12 +20,12 @@
 
 #include <boost/filesystem.hpp>
 
-#include "latex_headers2.hpp"
+#include "latex_headers.hpp"
 
 using namespace boost::filesystem;
 
 constexpr int MAJOR = 2;
-constexpr int MINOR = 0;
+constexpr int MINOR = 1;
 
 void usage(char * progname) {
   vector<string> tokens;

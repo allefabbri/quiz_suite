@@ -25,7 +25,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "config2.hpp"
+#include "config.hpp"
 
 using namespace std;
 using namespace boost::algorithm;
