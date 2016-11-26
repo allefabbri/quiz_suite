@@ -22,6 +22,8 @@
 #endif
 
 #include <iostream>
+#include <iomanip>
+#include <fstream>
 #include <vector>
 
 using namespace std;
@@ -68,7 +70,7 @@ public:
     string key, equal, value;
     std::ifstream filein(config_name);
     if (!filein) {
-      cerr << "Configuration file " << config_name << " not found. Quitting..." << endl;
+      cerr << "Configuration file " << this->config_name << " not found. Quitting..." << endl;
       exit(3);
     }
     while (filein >> key >> equal >> value) {
@@ -168,7 +170,7 @@ public:
         topics_name = value;
       }
       else {
-        cerr << "Key " << key << " unknown. Edit " << config_name << endl;
+        cerr << "Key " << key << " unknown. Edit " << this->config_name << endl;
         exit(3);
       }
     }
@@ -182,9 +184,9 @@ public:
 template<typename Call_t> class GenConfig : public BaseConfig<Call_t> {
 public:
   GenConfig(string _config_name, Call_t * _callptr) {
-    config_name = _config_name;
-    callptr = _callptr;
-    if (config_name == "-conf_t") {
+    this->config_name = _config_name;
+    this->callptr = _callptr;
+    if (this->config_name == "-conf_t") {
       std::cout << "Creating empty config file \"gen.config\"" << std::endl;
       std::ofstream fileout("gen.config");
       fileout 
@@ -210,64 +212,64 @@ public:
 
   bool check_params() { 
     bool ret = true;
-    if (callptr->name == "") {
-      cout << "CALL NAME unset. Edit " << config_name << endl;
+    if (this->callptr->name == "") {
+      cout << "CALL NAME unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (callptr->date == "") {
-      cout << "CALL DATE unset. Edit " << config_name << endl;
+    if (this->callptr->date == "") {
+      cout << "CALL DATE unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (callptr->course == "") {
-      cout << "CALL COURSE unset. Edit " << config_name << endl;
+    if (this->callptr->course == "") {
+      cout << "CALL COURSE unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (callptr->tag == "") {
-      cout << "CALL TAG unset. Edit " << config_name << endl;
+    if (this->callptr->tag == "") {
+      cout << "CALL TAG unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (callptr->cdl == "") {
-      cout << "CALL CDL unset. Edit " << config_name << endl;
+    if (this->callptr->cdl == "") {
+      cout << "CALL CDL unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (callptr->commission == "") {
-      cout << "COMMISSION unset. Edit " << config_name << endl;
+    if (this->callptr->commission == "") {
+      cout << "COMMISSION unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (exam_number == -1) {
-      cout << "EXAM NUMBER unset. Edit " << config_name << endl;
+    if (this->exam_number == -1) {
+      cout << "EXAM NUMBER unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (callptr->score_scale == -1.0) {
-      cout << "SCORE SCALE value unset. Edit " << config_name << endl;
+    if (this->callptr->score_scale == -1.0) {
+      cout << "SCORE SCALE value unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (slot_specs.size() == 0) {
-      cout << "SPECS unset. Edit " << config_name << endl;
+    if (this->slot_specs.size() == 0) {
+      cout << "SPECS unset. Edit " << this->config_name << endl;
       ret = false;
     }
     else {
-      for (auto spec : slot_specs) {
+      for (auto spec : this->slot_specs) {
         if (spec.size() == 0) {
-          cout << "SLOT_SPEC is empty. Edit " << config_name << endl;
+          cout << "SLOT_SPEC is empty. Edit " << this->config_name << endl;
           ret = false;
         }
       }
     }
-    if (starting_serial == -1) {
-      cout << "STARTING SERIAL unset. Edit " << config_name << endl;
+    if (this->starting_serial == -1) {
+      cout << "STARTING SERIAL unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (random_seed == -1) {
-      cout << "RANDOM SEED unset. Edit " << config_name << endl;
+    if (this->random_seed == -1) {
+      cout << "RANDOM SEED unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (work_folder == "") {
-      cout << "WORKING FOLDER unset. Edit " << config_name << endl;
+    if (this->work_folder == "") {
+      cout << "WORKING FOLDER unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (db_folder == "") {
-      cout << "DATABASE FOLDER unset. Edit " << config_name << endl;
+    if (this->db_folder == "") {
+      cout << "DATABASE FOLDER unset. Edit " << this->config_name << endl;
       ret = false;
     }
     return ret;
@@ -279,9 +281,9 @@ public:
 template<typename Call_t> class GradeConfig : public BaseConfig<Call_t> {
 public:
   GradeConfig(string _config_name, Call_t * _callptr) {
-    config_name = _config_name;
-    callptr = _callptr;
-    if (config_name == "-conf_t") {
+    this->config_name = _config_name;
+    this->callptr = _callptr;
+    if (this->config_name == "-conf_t") {
       std::cout << "Creating empty config file \"grade.config\"" << std::endl;
       std::ofstream fileout("grade.config");
       fileout
@@ -301,40 +303,40 @@ public:
   bool check_params() {
     bool ret = true;
 
-    if (bugs_name == "") {
+    if (this->bugs_name == "") {
       cout << "BUGS file unset, entering HEALTHY mode" << endl;
-      is_call_bugged = false;
+      this->is_call_bugged = false;
     }
     else {
       cout << "BUGS file set, entering BUGGED mode" << endl;
-      is_call_bugged = true;
+      this->is_call_bugged = true;
     }
-    if (serials_name == "") {
-      cout << "SERIALS file unset. Edit " << config_name << endl;
+    if (this->serials_name == "") {
+      cout << "SERIALS file unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (grade_report_basename == "") {
-      cout << "REPORT BASENAME unset. Edit " << config_name << endl;
+    if (this->grade_report_basename == "") {
+      cout << "REPORT BASENAME unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (results_name == "") {
-      cout << "RESULTS file unset. Edit " << config_name << endl;
+    if (this->results_name == "") {
+      cout << "RESULTS file unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (grades_name == "") {
-      cout << "GRADES file unset. Edit " << config_name << endl;
+    if (this->grades_name == "") {
+      cout << "GRADES file unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (choices_number == -1) {
-      cout << "CHOICES value unset. Edit " << config_name << endl;
+    if (this->choices_number == -1) {
+      cout << "CHOICES value unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (callptr->score_scale == -1.0) {
-      cout << "SCORE SCALE value unset. Edit " << config_name << endl;
+    if (this->callptr->score_scale == -1.0) {
+      cout << "SCORE SCALE value unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (work_folder == "") {
-      cout << "WORK FOLDER unset. Edit " << config_name << endl;
+    if (this->work_folder == "") {
+      cout << "WORK FOLDER unset. Edit " << this->config_name << endl;
       ret = false;
     }
 
@@ -347,9 +349,9 @@ public:
 template<typename Call_t> class CorrectionConfig : public BaseConfig<Call_t> {
 public:
   CorrectionConfig(string _config_name, Call_t * _callptr) {
-    config_name = _config_name;
-    callptr = _callptr;
-    if (config_name == "-conf_t") {
+    this->config_name = _config_name;
+    this->callptr = _callptr;
+    if (this->config_name == "-conf_t") {
       std::cout << "Creating empty config file \"correction.config\"" << std::endl;
       std::ofstream fileout("correction.config");
       fileout
@@ -368,45 +370,45 @@ public:
 
   bool check_params() {
     bool ret = true;
-    if (callptr->name == "") {
-      cout << "CALL NAME unset. Edit " << config_name << endl;
+    if (this->callptr->name == "") {
+      cout << "CALL NAME unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (callptr->date == "") {
-      cout << "CALL DATE unset. Edit " << config_name << endl;
+    if (this->callptr->date == "") {
+      cout << "CALL DATE unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (callptr->course == "") {
-      cout << "CALL COURSE unset. Edit " << config_name << endl;
+    if (this->callptr->course == "") {
+      cout << "CALL COURSE unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (callptr->tag == "") {
-      cout << "CALL TAG unset. Edit " << config_name << endl;
+    if (this->callptr->tag == "") {
+      cout << "CALL TAG unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (callptr->cdl == "") {
-      cout << "CALL CDL unset. Edit " << config_name << endl;
+    if (this->callptr->cdl == "") {
+      cout << "CALL CDL unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (work_folder == "") {
-      cout << "WORKING FOLDER unset. Edit " << config_name << endl;
+    if (this->work_folder == "") {
+      cout << "WORKING FOLDER unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (thresholds.size() == 0) {
+    if (this->thresholds.size() == 0) {
       cout << "PUBLIC mode OFF. THRESHOLDS unset." << endl;
-      make_public_correction = false;
+      this->make_public_correction = false;
     }
     else {
       cout << "PUBLIC mode ON. THRESHOLDS set to " << endl;
-      cout << "Range 1  ->  [  " << fixed << setprecision(2) << 0.0 << " , " << thresholds[0] << " [ " << endl;
-      for (size_t i = 0; i < thresholds.size() - 1; i++) {
-        cout << "Range " << i + 2 << "  ->  [ " << fixed << setprecision(2) << thresholds[i] << " , " << thresholds[i + 1] << " [ " << endl;
+      cout << "Range 1  ->  [  " << fixed << setprecision(2) << 0.0 << " , " << this->thresholds[0] << " [ " << endl;
+      for (size_t i = 0; i < this->thresholds.size() - 1; i++) {
+        cout << "Range " << i + 2 << "  ->  [ " << fixed << setprecision(2) << this->thresholds[i] << " , " << this->thresholds[i + 1] << " [ " << endl;
       }
-      cout << "Range " << thresholds.size() + 1 << "  ->  [ " << thresholds.back() << " , " << 30.0 << " ] " << endl << endl;
-      make_public_correction = true;
+      cout << "Range " << this->thresholds.size() + 1 << "  ->  [ " << this->thresholds.back() << " , " << 30.0 << " ] " << endl << endl;
+      this->make_public_correction = true;
     }
-    if (grades_name == "") {
-      cout << "GRADES FILE unset. Edit " << config_name << endl;
+    if (this->grades_name == "") {
+      cout << "GRADES FILE unset. Edit " << this->config_name << endl;
       ret = false;
     }
     return ret;
@@ -418,9 +420,9 @@ public:
 template<typename Call_t> class StatsConfig : public BaseConfig<Call_t> {
 public:
   StatsConfig(string _config_name, Call_t * _callptr) {
-    config_name = _config_name;
-    callptr = _callptr;
-    if (config_name == "-conf_t") {
+    this->config_name = _config_name;
+    this->callptr = _callptr;
+    if (this->config_name == "-conf_t") {
       std::cout << "Creating empty config file \"stats.config\"" << std::endl;
       std::ofstream fileout("stats.config");
       fileout
@@ -437,24 +439,24 @@ public:
   bool check_params() {
     bool ret = true;
 
-    if (work_folder == "") {
-      cout << "WORKING folder unset. Edit " << config_name << endl;
+    if (this->work_folder == "") {
+      cout << "WORKING folder unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (grades_name == "") {
-      cout << "GRADES file unset. Edit " << config_name << endl;
+    if (this->grades_name == "") {
+      cout << "GRADES file unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (serials_name == "") {
-      cout << "SERIALS file unset. Edit " << config_name << endl;
+    if (this->serials_name == "") {
+      cout << "SERIALS file unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (stat_report == "") {
-      cout << "REPORT file unset. Edit " << config_name << endl;
+    if (this->stat_report == "") {
+      cout << "REPORT file unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (bin_pivot.size() < 2) {
-      cout << "BINS values unset. Edit " << config_name << endl;
+    if (this->bin_pivot.size() < 2) {
+      cout << "BINS values unset. Edit " << this->config_name << endl;
       ret = false;
     }
 
@@ -467,9 +469,9 @@ public:
 template<typename Call_t> class QueryConfig : public BaseConfig<Call_t> {
 public:
   QueryConfig(string _config_name, Call_t * _callptr){
-    config_name = _config_name;
-    callptr = _callptr;
-    if (config_name == "-conf_t") {
+    this->config_name = _config_name;
+    this->callptr = _callptr;
+    if (this->config_name == "-conf_t") {
       cout << "Generating empty config file \"query.config\"" << endl;
       std::ofstream config("query.config");
       config
@@ -484,20 +486,20 @@ public:
 
   bool check_params() {
     bool ret = true;
-    if (grades_name == "") {
-      cerr << "GRADES file unset. Edit " << config_name << endl;
+    if (this->grades_name == "") {
+      cerr << "GRADES file unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (serials_name == "") {
-      cerr << "SERIALS file unset. Edit " << config_name << endl;
+    if (this->serials_name == "") {
+      cerr << "SERIALS file unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (topics_name == "") {
-      cerr << "TOPICS file unset. Edit " << config_name << endl;
+    if (this->topics_name == "") {
+      cerr << "TOPICS file unset. Edit " << this->config_name << endl;
       ret = false;
     }
-    if (work_folder == "") {
-      cerr << "WORKING folder unset. Edit " << config_name << endl;
+    if (this->work_folder == "") {
+      cerr << "WORKING folder unset. Edit " << this->config_name << endl;
       ret = false;
     }
     return ret;

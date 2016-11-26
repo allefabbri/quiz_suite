@@ -51,8 +51,8 @@ int main(int argc, char ** argv) {
   string line, file_path;
   vector<string> tokens;
   map<string, Question_param> question_map;
-  int exam_number = 0;
-  size_t pad_name = 0;
+  //int exam_number = 0;
+  int pad_name = 0;
   map<int, int> pardon_bins;
   
   // Create config
@@ -71,7 +71,7 @@ int main(int argc, char ** argv) {
   for (auto exam : call.exams) {
     for (int i = 0; i < exam.answers.size(); i++) {
       string question_name = call.serials_map[exam.serial].second[i];
-      if (pad_name < question_name.size()) pad_name = question_name.size();
+      if ( size_t(pad_name) < question_name.size() ) pad_name = int(question_name.size());
       question_map[question_name].repetitions++;
       if (exam.answers[i] == '-') {
         question_map[question_name].blank++;
