@@ -202,7 +202,7 @@ public:
         << "SLOTn           = regexn.1-* regexn.2-* ;" << endl
         << "STARTING_SERIAL = 1" << endl
         << "RANDOM_SEED     = 1" << endl
-        << "SCALE           = 30" << endl
+        << "SCORE_SCALE     = 30" << endl
         << "WORK_FOLDER     = call1" << endl
         << "DATABASE_FOLDER = database" << endl << endl;
       fileout.close();
