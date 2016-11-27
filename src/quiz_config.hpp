@@ -171,7 +171,6 @@ public:
       }
       else {
         cerr << "Key " << key << " unknown. Edit " << this->config_name << endl;
-        exit(3);
       }
     }
     filein.close();
@@ -208,6 +207,7 @@ public:
       fileout.close();
       exit(-1);
     }
+    parsefile();
   }
 
   bool check_params() { 
@@ -298,6 +298,7 @@ public:
       fileout.close();
       exit(-1);
     }
+    parsefile();
   }
 
   bool check_params() {
@@ -366,6 +367,7 @@ public:
       fileout.close();
       exit(-1);
     }
+    parsefile();
   }
 
   bool check_params() {
@@ -434,6 +436,7 @@ public:
       fileout.close();
       exit(-1);
     }
+    parsefile();
   }
 
   bool check_params() {
@@ -482,6 +485,7 @@ public:
       config.close();
       exit(-1);
     }
+    parsefile();
   }
 
   bool check_params() {

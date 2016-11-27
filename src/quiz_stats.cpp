@@ -58,7 +58,6 @@ int main(int argc, char ** argv) {
   // Create config
   StatsCall call;
   StatsConf c(config_name, &call);
-  c.parsefile();
   if (!c.check_params()) exit(4);
 
   // Import SERIALS file

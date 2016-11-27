@@ -64,7 +64,6 @@ int main(int argc, char ** argv) {
   // Create config and call object
   GradeCall call;
   GradeConf c(config_name, &call);
-  c.parsefile();
   if (!c.check_params()) exit(4);
 
   // Import SERIALS file

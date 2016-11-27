@@ -60,7 +60,6 @@ int main(int argc, char ** argv) {
   // Create config
   GenCall call;
   GenConf c(config_name, &call);
-  c.parsefile();
   if (!c.check_params()) exit(4);
 
   // Start log file dumping
@@ -255,7 +254,7 @@ int main(int argc, char ** argv) {
   Total quiz & Total slots & Ave quiz per slot & Possible different exams \\ \hline)" << endl
   << tot_size << " & " << database.size() << " & "
   << fixed << setprecision(1) << double(tot_size)/database.size() 
-  << " & " << scientific << setprecision(2) << double(tot_ex) << dec << R"( \\ \hline 
+    << " & " << num_to_latex_scientific(tot_ex) << R"( \\ \hline 
 \end{tabular}
     \end{center}
 

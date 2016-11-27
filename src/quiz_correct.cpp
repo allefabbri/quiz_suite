@@ -54,7 +54,6 @@ int main(int argc, char ** argv) {
   // Create config
   CorrectionCall call;
   CorrectionConf c(config_name, &call);
-  c.parsefile();
   if (!c.check_params()) exit(4);
 
   // Importing GRADES file

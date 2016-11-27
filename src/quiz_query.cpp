@@ -90,7 +90,6 @@ int main(int argc, char** argv) {
   // Create config object
   QueryCall call;
   QueryConf c(config_name, &call);
-  c.parsefile();
   if (!c.check_params()) exit(4);
 
   // Parse serial file
