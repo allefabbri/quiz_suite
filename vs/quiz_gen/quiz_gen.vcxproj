@@ -134,6 +134,7 @@
     <ClInclude Include="..\..\src\latex_utils.hpp" />
     <ClInclude Include="..\..\src\quiz_classes.hpp" />
     <ClInclude Include="..\..\src\quiz_config.hpp" />
+    <ClInclude Include="..\..\src\quiz_database.hpp" />
     <ClInclude Include="..\..\src\quiz_utils.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

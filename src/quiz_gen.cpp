@@ -55,8 +55,8 @@ int main(int argc, char ** argv) {
   }
 
   // Create config
-  Call<BaseExam> call;
-  GenConfig<decltype(call)> c(config_name, &call);
+  GenCall call;
+  GenConf c(config_name, &call);
   c.parsefile();
   if (!c.check_params()) exit(4);
 
@@ -84,14 +84,14 @@ int main(int argc, char ** argv) {
   try {
     if (exists(p)) {
       if (is_directory(p)) {
-        log << log_counter << ") Entering database directory : " << p << endl; log_counter++;
+        log << log_counter++ << ") Entering database directory : " << p << endl;
         for (directory_iterator it(p), end; it != end; it++) {
-          log << log_counter << ") Analyzing question : " << it->path().filename() << endl; log_counter++;
+          log << log_counter++ << ") Analyzing question : " << it->path().filename() << endl;
           for (size_t i = 0; i < c.slot_specs.size(); i++) {
             for (auto patt : c.slot_specs[i]) {
               regex r(patt);
               if (std::regex_search(it->path().filename().generic_string(), r)) {
-                log << log_counter << ") Question " << it->path().filename() << " matches \"" << patt << "\", stored in SLOT" << i + 1 << endl; log_counter++;
+                log << log_counter++ << ") Question " << it->path().filename() << " matches \"" << patt << "\", stored in SLOT" << i + 1 << endl;
                 db[i].push_back(it->path().generic_string());
               }
             }
@@ -99,12 +99,12 @@ int main(int argc, char ** argv) {
         }
       }
       else {
-        log << log_counter << ") Database folder is not a directory : " << p << endl; log_counter++;
+        log << log_counter++ << ") Database folder is not a directory : " << p << endl;
         exit(66);
       }
     }
     else {
-      log << log_counter << ") Database directory not found : " << p << endl; log_counter++;
+      log << log_counter++ << ") Database directory not found : " << p << endl;
       exit(6);
     }
   }
@@ -113,11 +113,11 @@ int main(int argc, char ** argv) {
   }
 
   // DB 2 - Sorting names, database size, safety size check loop
-  log << log_counter << ") Sorting database names " << endl; log_counter++;
+  log << log_counter++ << ") Sorting database names " << endl;
   size_t database_size = 0;
   for (size_t i = 0; i < db.size(); ++i) {
     if (db[i].size() == 0) {
-      log << log_counter << ") Unable to populate slot #" << i+1 << endl; log_counter++;
+      log << log_counter++ << ") Unable to populate slot #" << i+1 << endl;
       exit(7);
     }
     database_size += db[i].size();
@@ -132,12 +132,9 @@ int main(int argc, char ** argv) {
     for (size_t j = 0; j < db[i].size(); j++) {
       string line;
       vector<string> all_lines;
-      log << log_counter << ") Importing question : " << db[i][j] << endl; log_counter++;
+      log << log_counter++ << ") Importing question : " << db[i][j] << endl;
       filein.open(db[i][j]);
-      if (!filein) {
-        log << log_counter << ") Error opening : " << db[i][j] << endl;
-        log_counter++;
-      }
+      if (!filein) log << log_counter++ << ") Error opening : " << db[i][j] << endl;
       while (std::getline(filein, line)) {
         if (line[0] != '.' && line[0] != '#' && line.size() != 0 && line != "\n") {
           all_lines.push_back(line);
@@ -161,13 +158,13 @@ int main(int argc, char ** argv) {
   }
 
   // Randomizer
-  log << log_counter << ") Initializing randomizer" << endl; log_counter++;
+  log << log_counter++ << ") Initializing randomizer" << endl;
   Rnd r(c.random_seed);
 
   // Filling the call
-  log << log_counter << ") Generating the call" << endl; log_counter++;
+  log << log_counter++ << ") Generating the call" << endl;
   for (int i = 0; i < c.exam_number; i++) {
-    log << log_counter << ") Generating exam " << i + 1 << " of " << c.exam_number << endl; log_counter++;
+    log << log_counter++ << ") Generating exam " << i + 1 << " of " << c.exam_number << endl;
     BaseExam exam;
     exam.serial = c.starting_serial + i;
     // shuffling questions database
@@ -187,7 +184,7 @@ int main(int argc, char ** argv) {
   }
 
   // Writing SERIALS file
-  log << log_counter << ") Writing serial file" << endl; log_counter++;
+  log << log_counter++ << ") Writing serial file" << endl;
   file_path = c.work_folder + "/serials_" + call.name + ".txt";
   std::ofstream fileout(file_path);
   if (!fileout) {
@@ -205,7 +202,7 @@ int main(int argc, char ** argv) {
   fileout.close();
 
   // Writing EXAM latex content file
-  log << log_counter << ") Writing exam content" << endl; log_counter++;
+  log << log_counter++ << ") Writing exam content" << endl;
   file_path = c.work_folder + "/exam-content_" + call.name + ".tex";
   fileout.open(file_path);
   if (!fileout) {
@@ -231,7 +228,7 @@ int main(int argc, char ** argv) {
   fileout.close();
 
   // Writing DATABASE latex content file
-  log << log_counter << ") Writing database content" << endl; log_counter++;
+  log << log_counter++ << ") Writing database content" << endl;
   file_path = c.work_folder + "/database-content_" + call.name + ".tex";
   fileout.open(file_path);
   if (!fileout) {
@@ -263,7 +260,7 @@ int main(int argc, char ** argv) {
         << "{\\large \\textbf{" << all_counter << "} - }{\\tt [" << q.name << "]}" << q.text << endl << endl;
       for (size_t j = 0; j < q.answers.size(); j++) {
         if(j==0){
-          fileout << "{\\textbf{$" << char('A' + j) << "$}}: " << q.answers[j].first << endl << "\\ \\" << endl;
+          fileout << "{\\boxed{$" << char('A' + j) << "$}}: " << q.answers[j].first << endl << "\\ \\" << endl;
         }
         else{
           fileout << "{$" << char('A' + j) << "$}: " << q.answers[j].first << endl << "\\ \\" << endl;
@@ -276,7 +273,7 @@ int main(int argc, char ** argv) {
   fileout.close();
 
   // Writing EXAM form
-  log << log_counter << ") Writing exam form" << endl; log_counter++;
+  log << log_counter++ << ") Writing exam form" << endl;
   file_path = c.work_folder + "/exam-form.tex";
   fileout.open(file_path);
   if (!fileout) {
@@ -287,7 +284,7 @@ int main(int argc, char ** argv) {
   fileout.close();
 
   // Writing DATABASE form
-  log << log_counter << ") Writing database form" << endl; log_counter++;
+  log << log_counter++ << ") Writing database form" << endl;
   file_path = c.work_folder + "/database-form.tex";
   fileout.open(file_path);
   if (!fileout) {
