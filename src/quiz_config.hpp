@@ -207,7 +207,7 @@ public:
       fileout.close();
       exit(-1);
     }
-    parsefile();
+    this->parsefile();
   }
 
   bool check_params() { 
@@ -298,7 +298,7 @@ public:
       fileout.close();
       exit(-1);
     }
-    parsefile();
+    this->parsefile();
   }
 
   bool check_params() {
@@ -367,7 +367,7 @@ public:
       fileout.close();
       exit(-1);
     }
-    parsefile();
+    this->parsefile();
   }
 
   bool check_params() {
@@ -436,7 +436,7 @@ public:
       fileout.close();
       exit(-1);
     }
-    parsefile();
+    this->parsefile();
   }
 
   bool check_params() {
@@ -485,7 +485,7 @@ public:
       config.close();
       exit(-1);
     }
-    parsefile();
+    this->parsefile();
   }
 
   bool check_params() {
