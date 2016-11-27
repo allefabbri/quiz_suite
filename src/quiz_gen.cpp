@@ -23,9 +23,12 @@
 
 #include "latex_utils.hpp"
 
+#include "quiz_database.hpp"
+
 typedef Call<BaseExam>     GenCall;
 typedef GenConfig<GenCall> GenConf;
 
+using namespace std;
 using namespace boost::filesystem;
 
 constexpr int MAJOR = 2;
@@ -61,6 +64,7 @@ int main(int argc, char ** argv) {
   if (!c.check_params()) exit(4);
 
   // Start log file dumping
+  int log_counter = 1;
   string file_path = c.work_folder + "/gen.log";
   std::ofstream log(file_path);
   log << "PARAMETERS IN USE" << endl
@@ -77,10 +81,13 @@ int main(int argc, char ** argv) {
     << "Database folder : " << c.db_folder << endl << endl << endl
     << "OPERATIONS PERFORMED" << endl;
 
+  // Create DB
+  QuizDatabase db2(log, log_counter);
+  if (!db2.populate_names(c)) exit(-1);
+
   // DB 1 - Browsing database
   path p(c.db_folder);
   vector<vector <string> > db(c.slot_specs.size());
-  int log_counter = 1;
   try {
     if (exists(p)) {
       if (is_directory(p)) {
@@ -117,7 +124,8 @@ int main(int argc, char ** argv) {
   size_t database_size = 0;
   for (size_t i = 0; i < db.size(); ++i) {
     if (db[i].size() == 0) {
-      log << log_counter++ << ") Unable to populate slot #" << i+1 << endl;
+      log << log_counter++ << ") Unable to populate slot #" << i + 1 << endl;
+      cerr << "SLOT #" << i+1 << " is empty. Quitting..." << endl;
       exit(7);
     }
     database_size += db[i].size();
@@ -239,7 +247,7 @@ int main(int argc, char ** argv) {
   fileout << "% Content of database for call <" << call.name << "> date " << call.date << endl << endl;
   // Header
   int tot_size = 0, tot_ex = 1;
-  for(auto s : database ) tot_size += s.size(), tot_ex *= s.size();
+  for(auto s : database ) tot_size += int(s.size()), tot_ex *= int(s.size());
   fileout << R"(\section*{Database}
 \begin{center}
 \begin{tabular}{| c | c | c | c |}
@@ -247,7 +255,7 @@ int main(int argc, char ** argv) {
   Total quiz & Total slots & Ave quiz per slot & Possible different exams \\ \hline)" << endl
   << tot_size << " & " << database.size() << " & "
   << fixed << setprecision(1) << double(tot_size)/database.size() 
-  << " & " << tot_ex << R"( \\ \hline 
+  << " & " << scientific << setprecision(2) << double(tot_ex) << dec << R"( \\ \hline 
 \end{tabular}
     \end{center}
 
