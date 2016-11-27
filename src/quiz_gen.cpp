@@ -240,13 +240,34 @@ int main(int argc, char ** argv) {
   }
   int all_counter = 1;
   fileout << "% Content of database for call <" << call.name << "> date " << call.date << endl << endl;
+  // Header
+  int tot_size = 0, tot_ex = 1;
+  for(auto s : database ) tot_size += s.size(), tot_ex *= s.size();
+  fileout << R"(\section*{Database}
+\begin{center}
+\begin{tabular}{| c | c | c | c |}
+  \hline
+  Total quiz & Total slots & Ave quiz per slot & Possible different exams \\ \hline)" << endl
+  << tot_size << " & " << database.size() << " & "
+  << fixed << setprecision(1) << double(tot_size)/database.size() 
+  << " & " << tot_ex << R"( \\ \hline 
+\end{tabular}
+    \end{center}
+
+)";
+  // Slots
   for (size_t i = 0; i < database.size(); i++) {
     fileout << "\\subsection*{Slot " << i + 1 << "/" << database.size() << " , size " << database[i].size() << "}" << endl << endl;
     for (auto q : database[i]) {
       fileout << "\\noindent" << endl
         << "{\\large \\textbf{" << all_counter << "} - }{\\tt [" << q.name << "]}" << q.text << endl << endl;
       for (size_t j = 0; j < q.answers.size(); j++) {
-        fileout << "{$" << char('A' + j) << "$}: " << q.answers[j].first << endl << "\\ \\" << endl;
+        if(j==0){
+          fileout << "{\\textbf{$" << char('A' + j) << "$}}: " << q.answers[j].first << endl << "\\ \\" << endl;
+        }
+        else{
+          fileout << "{$" << char('A' + j) << "$}: " << q.answers[j].first << endl << "\\ \\" << endl;
+        }
       }
       fileout << endl;
       all_counter++;

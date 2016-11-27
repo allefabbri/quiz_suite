@@ -85,8 +85,8 @@ string exam_tex_table(int question_number) {
     ss << R"(| p{\spazio cm} )";
   }
   ss << "|}\n\t\\hline" << endl << "\t";
-  for (int i = 0; i < question_number; i++) {
-    ss << i+1 << ( ((i+1)%column_number==0)?" \\\\[5ex] \\hline \n\t":" & " ) ;
+  for (int i = 0; i < 3*column_number; i++) {
+    ss << (i<question_number?to_string(i+1):" ") << ( ((i+1)%column_number==0)?" \\\\[5ex] \\hline \n\t":" & " ) ;
   }
 
   ss << "\t" << R"(\end{tabular}
