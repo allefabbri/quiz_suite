@@ -35,7 +35,28 @@ class BaseQuestion {
 public:
   string path, name;
   string text;
-  vector<pair<string, int> > answers;    // { answer , correctness bool value }
+  vector<pair<string, bool> > answers;    // { answer , correctness status (bool value, 1 true and size-1 false }
+
+  BaseQuestion() {};
+  BaseQuestion(const string & filepath) {
+    string line;
+    vector<string> all_lines, tokens;
+    std::ifstream filein(filepath);
+    while (std::getline(filein, line)) {
+      if (line[0] != '.' && line[0] != '#' && line.size() != 0 && line != "\n") {
+        all_lines.push_back(line);
+      }
+    }
+    filein.close();
+    split(tokens, filepath, is_any_of("/\\"), token_compress_on);
+
+    path = filepath;
+    name = tokens.back();
+    text = all_lines[0];
+    for (size_t k = 1; k < all_lines.size(); k++) {
+      answers.push_back(make_pair(all_lines[k], (k == 1) ? true : false));
+    }
+  }
 };
 
 

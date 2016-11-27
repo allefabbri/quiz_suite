@@ -48,7 +48,7 @@ public:
 
 template<typename T> string num_to_latex_scientific(const T& t, const int & prec = 2) {
   auto x = double(t);
-  int exp = (t == 0) ? 0 : int(log10(abs(t)));
+  int exp = (t == 0) ? 0 : int(log10(fabs(x)));
   stringstream ss;
   ss << " $ " << fixed << setprecision(prec) << x*pow(10, -exp) << " \\times 10^{" << exp << "} $ ";
   return ss.str();

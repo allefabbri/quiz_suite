@@ -81,88 +81,8 @@ int main(int argc, char ** argv) {
     << "OPERATIONS PERFORMED" << endl;
 
   // Create DB
-  QuizDatabase db2(log, log_counter);
-  if (!db2.populate_names(c)) exit(-1);
-
-  // DB 1 - Browsing database
-  path p(c.db_folder);
-  vector<vector <string> > db(c.slot_specs.size());
-  try {
-    if (exists(p)) {
-      if (is_directory(p)) {
-        log << log_counter++ << ") Entering database directory : " << p << endl;
-        for (directory_iterator it(p), end; it != end; it++) {
-          log << log_counter++ << ") Analyzing question : " << it->path().filename() << endl;
-          for (size_t i = 0; i < c.slot_specs.size(); i++) {
-            for (auto patt : c.slot_specs[i]) {
-              regex r(patt);
-              if (std::regex_search(it->path().filename().generic_string(), r)) {
-                log << log_counter++ << ") Question " << it->path().filename() << " matches \"" << patt << "\", stored in SLOT" << i + 1 << endl;
-                db[i].push_back(it->path().generic_string());
-              }
-            }
-          }
-        }
-      }
-      else {
-        log << log_counter++ << ") Database folder is not a directory : " << p << endl;
-        exit(66);
-      }
-    }
-    else {
-      log << log_counter++ << ") Database directory not found : " << p << endl;
-      exit(6);
-    }
-  }
-  catch (const filesystem_error &ex) {
-    cout << ex.what() << endl;
-  }
-
-  // DB 2 - Sorting names, database size, safety size check loop
-  log << log_counter++ << ") Sorting database names " << endl;
-  size_t database_size = 0;
-  for (size_t i = 0; i < db.size(); ++i) {
-    if (db[i].size() == 0) {
-      log << log_counter++ << ") Unable to populate slot #" << i + 1 << endl;
-      cerr << "SLOT #" << i+1 << " is empty. Quitting..." << endl;
-      exit(7);
-    }
-    database_size += db[i].size();
-    sort(db[i].begin(), db[i].end());
-  }
-
-  // DB 3 - Importing questions in organized database
-  vector<vector <BaseQuestion> > database;
-  std::ifstream filein;
-  for (size_t i = 0; i < db.size(); ++i) {
-    vector<BaseQuestion> database_slot;
-    for (size_t j = 0; j < db[i].size(); j++) {
-      string line;
-      vector<string> all_lines;
-      log << log_counter++ << ") Importing question : " << db[i][j] << endl;
-      filein.open(db[i][j]);
-      if (!filein) log << log_counter++ << ") Error opening : " << db[i][j] << endl;
-      while (std::getline(filein, line)) {
-        if (line[0] != '.' && line[0] != '#' && line.size() != 0 && line != "\n") {
-          all_lines.push_back(line);
-        }
-      }
-      filein.close();
-
-      vector<string> tokens;
-      split(tokens, db[i][j], is_any_of("/\\"), token_compress_on);
-
-      BaseQuestion q;
-      q.path = db[i][j];
-      q.name = tokens.back();
-      q.text = all_lines[0];
-      for (size_t k = 1; k < all_lines.size(); k++) {
-        q.answers.push_back(make_pair(all_lines[k], (k == 1) ? 1 : 0));
-      }
-      database_slot.push_back(q);
-    }
-    database.push_back(database_slot);
-  }
+  QuizDatabase database(log, log_counter);
+  if (!database.populate(c)) exit(-1);
 
   // Randomizer
   log << log_counter++ << ") Initializing randomizer" << endl;
@@ -174,17 +94,12 @@ int main(int argc, char ** argv) {
     log << log_counter++ << ") Generating exam " << i + 1 << " of " << c.exam_number << endl;
     BaseExam exam;
     exam.serial = c.starting_serial + i;
-    // shuffling questions database
-    for (auto slot : database) {
-      exam.questions.push_back(r.shuffle(slot)[0]);
-    }
-    // shuffling question order
-    exam.questions = r.shuffle(exam.questions);
-    // shuffling answer order and saving 
+    // extract fully randomized question set from db
+    exam.questions = database.get_rnd_question_set(r);
+    // create solution string for each exam 
     for (auto &q : exam.questions) {
-      q.answers = r.shuffle(q.answers);
       for (size_t j = 0; j < q.answers.size(); j++) {
-        if (q.answers[j].second == 1) exam.solutions.push_back('A' + char(j));
+        if (q.answers[j].second == true) exam.solutions.push_back('A' + char(j));
       }
     }
     call.exams.push_back(exam);
@@ -242,29 +157,29 @@ int main(int argc, char ** argv) {
     cerr << "LATEX DATABASE content " << file_path << " impossible to create. Quitting..." << endl;
     exit(14);
   }
-  int all_counter = 1;
   fileout << "% Content of database for call <" << call.name << "> date " << call.date << endl << endl;
   // Header
-  int tot_size = 0, tot_ex = 1;
-  for(auto s : database ) tot_size += int(s.size()), tot_ex *= int(s.size());
   fileout << R"(\section*{Database}
 \begin{center}
 \begin{tabular}{| c | c | c | c |}
   \hline
   Total quiz & Total slots & Ave quiz per slot & Possible different exams \\ \hline)" << endl
-  << tot_size << " & " << database.size() << " & "
-  << fixed << setprecision(1) << double(tot_size)/database.size() 
-    << " & " << num_to_latex_scientific(tot_ex) << R"( \\ \hline 
+  << database.size() << " & " << database.slot_size() << " & "
+  << fixed << setprecision(1) << database.ave_question_per_slot()
+    << " & " << num_to_latex_scientific(database.possible_exams()) << R"( \\ \hline 
 \end{tabular}
     \end{center}
 
 )";
   // Slots
-  for (size_t i = 0; i < database.size(); i++) {
-    fileout << "\\subsection*{Slot " << i + 1 << "/" << database.size() << " , size " << database[i].size() << "}" << endl << endl;
-    for (auto q : database[i]) {
+  int slot_counter = 1;
+  int question_counter = 1;
+  for (const auto & s : database.slots){
+    fileout << "\\subsection*{Slot " << slot_counter++ << "/" << database.slot_size() << " , size " << s.size() << "}" << endl << endl;
+    for (const auto & q_pair : s) {
+      auto q = q_pair.second;
       fileout << "\\noindent" << endl
-        << "{\\large \\textbf{" << all_counter << "} - }{\\tt [" << q.name << "]}" << q.text << endl << endl;
+        << "{\\large \\textbf{" << question_counter++ << "} - }{\\tt [" << q.name << "]}" << q.text << endl << endl;
       for (size_t j = 0; j < q.answers.size(); j++) {
         if(j==0){
           fileout << "{\\boxed{$" << char('A' + j) << "$}}: " << q.answers[j].first << endl << "\\ \\" << endl;
@@ -274,7 +189,6 @@ int main(int argc, char ** argv) {
         }
       }
       fileout << endl;
-      all_counter++;
     }
   }
   fileout.close();
