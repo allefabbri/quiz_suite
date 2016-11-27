@@ -14,15 +14,9 @@
 * You should have received a copy of the GNU General Public License     *
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
+
 #include "quiz_config.hpp"
-
-#include <algorithm>
-#include <regex>
-
-#include <boost/filesystem.hpp>
-
 #include "latex_utils.hpp"
-
 #include "quiz_database.hpp"
 
 typedef Call<BaseExam>     GenCall;
