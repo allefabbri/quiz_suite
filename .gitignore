@@ -192,6 +192,6 @@ ModelManifest.xml
 input*/
 output*/
 *.opendb
-
+.DS_Store
 *.db
 

@@ -108,7 +108,9 @@ public:
     for (size_t i = 0; i < slots.size(); ++i) {
       if (slots[i].size() == 0) {
         *log << (*log_counter)++ << ") Unable to populate slot #" << i + 1 << endl;
-        cerr << "SLOT #" << i + 1 << " is empty. Quitting..." << endl;
+        cerr << "SLOT #" << i + 1 << " is empty. Regex : ";
+        for(const auto & r : c.slot_specs[i]) cerr << r << " ";
+         cerr << endl << "Quitting..." << endl;
         ret = false;
         break;
       }

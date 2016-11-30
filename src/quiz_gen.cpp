@@ -117,30 +117,54 @@ int main(int argc, char ** argv) {
   }
   fileout.close();
 
-  // Writing EXAM latex content file
-  log << log_counter++ << ") Writing exam content" << endl;
-  file_path = c.work_folder + "/exam-content_" + call.name + ".tex";
+  // Writing EXAM form
+  if (c.exam_number !=0 ){
+    log << log_counter++ << ") Writing exam form" << endl;
+    file_path = c.work_folder + "/exam-form.tex";
+    fileout.open(file_path);
+    if (!fileout) {
+      cerr << "LATEX DATABASE content " << file_path << " impossible to create. Quitting..." << endl;
+      exit(15);
+    }
+    fileout << exam_form(call);
+    fileout.close();
+
+    // Writing EXAM latex content file
+    log << log_counter++ << ") Writing exam content" << endl;
+    file_path = c.work_folder + "/exam-content_" + call.name + ".tex";
+    fileout.open(file_path);
+    if (!fileout) {
+      cerr << "LATEX EXAM content " << file_path << " impossible to create. Quitting..." << endl;
+      exit(13);
+    }
+    fileout << "% Content of call <" << call.name << "> date " << call.date << endl << endl;
+    for (auto e : call.exams) {
+      fileout << "% Exam - serial " << e.serial << endl;
+      fileout << "\\def\\serialnumber{" << e.serial << "}" << endl;
+      fileout << "\\paperheader" << endl << endl << endl;
+      for (size_t i = 0; i < e.questions.size(); i++) {
+        fileout << "\\def\\questionnumber{" << i + 1 << "}" << endl << endl;
+        fileout << "\\questionheader " << e.questions[i].text << endl;
+        fileout << "\\\\" << endl;
+        for (size_t j = 0; j < e.questions[i].answers.size(); j++) {
+          fileout << "{$" << char('A' + j) << "$}: " << e.questions[i].answers[j].first << endl << "\\ \\ ";
+        }
+        fileout << endl << endl << endl;
+      }
+      fileout << endl << "\\paperfooter" << endl << endl << endl;
+    }
+    fileout.close();
+  }
+
+  // Writing DATABASE form
+  log << log_counter++ << ") Writing database form" << endl;
+  file_path = c.work_folder + "/database-form.tex";
   fileout.open(file_path);
   if (!fileout) {
-    cerr << "LATEX EXAM content " << file_path << " impossible to create. Quitting..." << endl;
-    exit(13);
+    cerr << "LATEX DATABASE content " << file_path << " impossible to create. Quitting..." << endl;
+    exit(15);
   }
-  fileout << "% Content of call <" << call.name << "> date " << call.date << endl << endl;
-  for (auto e : call.exams) {
-    fileout << "% Exam - serial " << e.serial << endl;
-    fileout << "\\def\\serialnumber{" << e.serial << "}" << endl;
-    fileout << "\\paperheader" << endl << endl << endl;
-    for (size_t i = 0; i < e.questions.size(); i++) {
-      fileout << "\\def\\questionnumber{" << i + 1 << "}" << endl << endl;
-      fileout << "\\questionheader " << e.questions[i].text << endl;
-      fileout << "\\\\" << endl;
-      for (size_t j = 0; j < e.questions[i].answers.size(); j++) {
-        fileout << "{$" << char('A' + j) << "$}: " << e.questions[i].answers[j].first << endl << "\\ \\ ";
-      }
-      fileout << endl << endl << endl;
-    }
-    fileout << endl << "\\paperfooter" << endl << endl << endl;
-  }
+  fileout << database_form(call);
   fileout.close();
 
   // Writing DATABASE latex content file
@@ -185,28 +209,6 @@ int main(int argc, char ** argv) {
       fileout << endl;
     }
   }
-  fileout.close();
-
-  // Writing EXAM form
-  log << log_counter++ << ") Writing exam form" << endl;
-  file_path = c.work_folder + "/exam-form.tex";
-  fileout.open(file_path);
-  if (!fileout) {
-    cerr << "LATEX DATABASE content " << file_path << " impossible to create. Quitting..." << endl;
-    exit(15);
-  }
-  fileout << exam_form(call);
-  fileout.close();
-
-  // Writing DATABASE form
-  log << log_counter++ << ") Writing database form" << endl;
-  file_path = c.work_folder + "/database-form.tex";
-  fileout.open(file_path);
-  if (!fileout) {
-    cerr << "LATEX DATABASE content " << file_path << " impossible to create. Quitting..." << endl;
-    exit(15);
-  }
-  fileout << database_form(call);
   fileout.close();
 
   // Command line suggestion
