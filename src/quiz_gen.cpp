@@ -177,7 +177,7 @@ int main(int argc, char ** argv) {
   }
   fileout << "% Content of database for call <" << call.name << "> date " << call.date << endl << endl;
   // Header
-  fileout << R"(\section*{Database}
+  fileout << R"(\section*{Database for call ")" << call.name << R"("}
 \begin{center}
 \begin{tabular}{| c | c | c | c |}
   \hline
