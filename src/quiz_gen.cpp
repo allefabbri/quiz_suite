@@ -99,67 +99,10 @@ int main(int argc, char ** argv) {
     call.exams.push_back(exam);
   }
 
-  // Writing SERIALS file
-  log << log_counter++ << ") Writing serial file" << endl;
-  file_path = c.work_folder + "/serials_" + call.name + ".txt";
-  std::ofstream fileout(file_path);
-  if (!fileout) {
-    cerr << "SERIAL file " << file_path << " impossible to create. Quitting..." << endl;
-    exit(12);
-  }
-  fileout << "% Serials for call <" << call.name << "> date " << call.date << endl;
-  for (auto e : call.exams) {
-    fileout << "\t" << e.serial << "\t";
-    for (auto q : e.questions) {
-      fileout << q.name << "\t";
-    }
-    fileout << e.solutions << endl;
-  }
-  fileout.close();
-
-  // Writing EXAM form
-  if (c.exam_number !=0 ){
-    log << log_counter++ << ") Writing exam form" << endl;
-    file_path = c.work_folder + "/exam-form.tex";
-    fileout.open(file_path);
-    if (!fileout) {
-      cerr << "LATEX DATABASE content " << file_path << " impossible to create. Quitting..." << endl;
-      exit(15);
-    }
-    fileout << exam_form(call);
-    fileout.close();
-
-    // Writing EXAM latex content file
-    log << log_counter++ << ") Writing exam content" << endl;
-    file_path = c.work_folder + "/exam-content_" + call.name + ".tex";
-    fileout.open(file_path);
-    if (!fileout) {
-      cerr << "LATEX EXAM content " << file_path << " impossible to create. Quitting..." << endl;
-      exit(13);
-    }
-    fileout << "% Content of call <" << call.name << "> date " << call.date << endl << endl;
-    for (auto e : call.exams) {
-      fileout << "% Exam - serial " << e.serial << endl;
-      fileout << "\\def\\serialnumber{" << e.serial << "}" << endl;
-      fileout << "\\paperheader" << endl << endl << endl;
-      for (size_t i = 0; i < e.questions.size(); i++) {
-        fileout << "\\def\\questionnumber{" << i + 1 << "}" << endl << endl;
-        fileout << "\\questionheader " << e.questions[i].text << endl;
-        fileout << "\\\\" << endl;
-        for (size_t j = 0; j < e.questions[i].answers.size(); j++) {
-          fileout << "{$" << char('A' + j) << "$}: " << e.questions[i].answers[j].first << endl << "\\ \\ ";
-        }
-        fileout << endl << endl << endl;
-      }
-      fileout << endl << "\\paperfooter" << endl << endl << endl;
-    }
-    fileout.close();
-  }
-
   // Writing DATABASE form
   log << log_counter++ << ") Writing database form" << endl;
   file_path = c.work_folder + "/database-form.tex";
-  fileout.open(file_path);
+  std::ofstream fileout(file_path);
   if (!fileout) {
     cerr << "LATEX DATABASE content " << file_path << " impossible to create. Quitting..." << endl;
     exit(15);
@@ -210,6 +153,66 @@ int main(int argc, char ** argv) {
     }
   }
   fileout.close();
+
+  // Wrap exam related output with size check
+  if (c.exam_number != 0 ){
+    // Writing SERIALS file
+    log << log_counter++ << ") Writing serial file" << endl;
+    file_path = c.work_folder + "/serials_" + call.name + ".txt";
+    fileout.open(file_path);
+    if (!fileout) {
+      cerr << "SERIAL file " << file_path << " impossible to create. Quitting..." << endl;
+      exit(12);
+    }
+    fileout << "% Serials for call <" << call.name << "> date " << call.date << endl;
+    for (auto e : call.exams) {
+      fileout << "\t" << e.serial << "\t";
+      for (auto q : e.questions) {
+        fileout << q.name << "\t";
+      }
+      fileout << e.solutions << endl;
+    }
+    fileout.close();
+
+    // Writing EXAM form
+    log << log_counter++ << ") Writing exam form" << endl;
+    file_path = c.work_folder + "/exam-form.tex";
+    fileout.open(file_path);
+    if (!fileout) {
+      cerr << "LATEX DATABASE content " << file_path << " impossible to create. Quitting..." << endl;
+      exit(15);
+    }
+    fileout << exam_form(call);
+    fileout.close();
+
+    // Writing EXAM latex content file
+    log << log_counter++ << ") Writing exam content" << endl;
+    file_path = c.work_folder + "/exam-content_" + call.name + ".tex";
+    fileout.open(file_path);
+    if (!fileout) {
+      cerr << "LATEX EXAM content " << file_path << " impossible to create. Quitting..." << endl;
+      exit(13);
+    }
+    fileout << "% Content of call <" << call.name << "> date " << call.date << endl << endl;
+    for (auto e : call.exams) {
+      fileout << "% Exam - serial " << e.serial << endl;
+      fileout << "\\def\\serialnumber{" << e.serial << "}" << endl;
+      fileout << "\\paperheader" << endl << endl << endl;
+      for (size_t i = 0; i < e.questions.size(); i++) {
+        fileout << "\\def\\questionnumber{" << i + 1 << "}" << endl << endl;
+        fileout << "\\questionheader " << e.questions[i].text << endl;
+        fileout << "\\\\" << endl;
+        for (size_t j = 0; j < e.questions[i].answers.size(); j++) {
+          fileout << "{$" << char('A' + j) << "$}: " << e.questions[i].answers[j].first << endl << "\\ \\ ";
+        }
+        fileout << endl << endl << endl;
+      }
+      fileout << endl << "\\paperfooter" << endl << endl << endl;
+    }
+    fileout.close();
+
+  }    // end of exam_number check
+
 
   // Command line suggestion
   cout << "To generate the pdf's please type :\ncd " << c.work_folder << " && for form in *-form.tex; do pdflatex.exe $form; done && cd -" << endl;
