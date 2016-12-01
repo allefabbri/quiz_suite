@@ -232,7 +232,10 @@ public:
         topic_map[qname] = qtopic;
       }
     }
-
+    if (topic_map.size() == 0) {
+      cerr << "TOPIC null map, size " << topic_map.size() << endl;
+      ret = false;
+    }
     return ret;
   }
 
@@ -266,7 +269,7 @@ public:
       outcome_map[e.student] = outcome;
     }
     if (outcome_map.size() == 0) {
-      cerr << "TOPIC null map, size " << outcome_map.size() << endl;
+      cerr << "OUTCOME null map, size " << outcome_map.size() << endl;
       ret = false;
     }
     return ret;
