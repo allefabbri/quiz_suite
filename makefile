@@ -21,7 +21,7 @@ quiz_query : $(SRC)/quiz_config.hpp $(SRC)/quiz_utils.hpp $(SRC)/quiz_classes.hp
 	$(CXX) $(FLAG) -o $(BIN)/quiz_query.exe $(SRC)/quiz_query.cpp
 
 dirs :
-	mkdir -p $(BIN)
+	@mkdir -p $(BIN)
 
 clean : 
 	rm -rf $(BIN)/*
