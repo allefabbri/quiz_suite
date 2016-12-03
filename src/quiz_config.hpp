@@ -424,6 +424,7 @@ public:
   StatsConfig(string _config_name, Call_t * _callptr) {
     this->config_name = _config_name;
     this->callptr = _callptr;
+    this->bin_pivot.resize(0);
     if (this->config_name == "-conf_t") {
       std::cout << "Creating empty config file \"stats.config\"" << std::endl;
       std::ofstream fileout("stats.config");

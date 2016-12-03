@@ -19,7 +19,7 @@
 #include "quiz_classes.hpp"
 
 typedef Call<GradedExam>       StatsCall;
-typedef GradeConfig<StatsCall> StatsConf;
+typedef StatsConfig<StatsCall> StatsConf;
 
 constexpr int MAJOR = 2;
 constexpr int MINOR = 1;
