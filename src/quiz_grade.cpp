@@ -69,13 +69,11 @@ int main(int argc, char ** argv) {
   // Import SERIALS file
   if (!call.parse_serial(&c)) exit(5);
 
-  // Importing GRADES file
+  // Importing RESULTS file
   if (!call.parse_results(&c)) exit(6);
 
   // Associate to each exam its solutions
-  for (auto &exam : call.exams) {
-    exam.solutions = call.serials_map[exam.serial].first;
-  }
+  for (auto &exam : call.exams) exam.solutions = call.serials_map[exam.serial].first;
 
   // Calculating grade scales and question points
   double grade_min, grade_max, score_min, score_max;
@@ -102,15 +100,15 @@ int main(int argc, char ** argv) {
     filein.close();
 
     // Creating BUGS and HEALTHY MAP
-    for (auto s_it = call.serials_map.begin(); s_it != call.serials_map.end(); s_it++) {
-      for (int i = 0; i < s_it->second.second.size(); i++) {
+    for (const auto & s : call.serials_map) {
+      for (int i = 0; i < s.second.second.size(); i++) {
         for (auto err : error_list) {
-          if (s_it->second.second[i] == err) {
-            bugs_map[s_it->first].push_back(i);                               // storing bugs positions            
+          if (s.second.second[i] == err) {
+            bugs_map[s.first].push_back(i);                               // storing bugs positions            
           }
         }
       }
-      if (bugs_map.find(s_it->first) == bugs_map.end()) healthy_map[s_it->first].push_back(1);
+      if (bugs_map.count(s.first) == 0) healthy_map[s.first].push_back(1);
     }
 
     // Dump LOG to file
@@ -125,19 +123,19 @@ int main(int argc, char ** argv) {
     fileout << endl << endl;
     fileout << "Number of serials : " << call.serials_map.size() << endl << endl;
     string ending;
-    for (auto s_it = call.serials_map.begin(); s_it != call.serials_map.end(); s_it++) {
-      if (bugs_map.find(s_it->first) == bugs_map.end()) {
+    for (const auto & s : call.serials_map) {
+      if (bugs_map.count(s.first) == 0) {
         ending = "------ HEALTHY exam\n";
         flag = "-     ";
-        for (int i = 0; i < s_it->second.second.size(); i++) {
-          fileout << flag << "\t-\tSerial " << s_it->first << "\tQuestion " << i + 1 << "\t\t" << s_it->second.second[i] << endl;
+        for (int i = 0; i < s.second.second.size(); i++) {
+          fileout << flag << "\t-\tSerial " << s.first << "\tQuestion " << i + 1 << "\t\t" << s.second.second[i] << endl;
         }
       }
       else {
         ending = "------ BUGGED exam\n";
-        for (int i = 0; i < s_it->second.second.size(); i++) {
-          for (int index = 0; index < bugs_map.find(s_it->first)->second.size(); index++) {
-            if (bugs_map.find(s_it->first)->second[index] == i) {
+        for (int i = 0; i < s.second.second.size(); i++) {
+          for (int index = 0; index < bugs_map.find(s.first)->second.size(); index++) {
+            if (bugs_map.find(s.first)->second[index] == i) {
               flag = "BUGGED";
               break;
             }
@@ -145,7 +143,7 @@ int main(int argc, char ** argv) {
               flag = "-     ";
             }
           }
-          fileout << flag << "\t-\tSerial " << s_it->first << "\tQuestion " << i + 1 << "\t\t" << s_it->second.second[i] << endl;
+          fileout << flag << "\t-\tSerial " << s.first << "\tQuestion " << i + 1 << "\t\t" << s.second.second[i] << endl;
         }
       }
       fileout << ending << endl;
@@ -163,22 +161,22 @@ int main(int argc, char ** argv) {
       << "HEALTHY serials : " << healthy_map.size()
       << " (" << fixed << setprecision(2) << healthy_map.size() / double(call.serials_map.size()) << " %)" << endl << endl;
     fileout << "BUGS map :" << endl;
-    for (auto it = bugs_map.begin(); it != bugs_map.end(); it++) {
-      fileout << std::setw(3) << it->first << "  ->  " << it->second.size() << "\t{ ";
-      for (auto i : it->second) {
-        fileout << setw(2) << i + 1 << " " << call.serials_map[it->first].first[i] << ((i == (it->second).back()) ? " }\n" : " , ");
+    for (const auto & b : bugs_map) {
+      fileout << std::setw(3) << b.first << "  ->  " << b.second.size() << "\t{ ";
+      for (auto i : b.second) {
+        fileout << setw(2) << i + 1 << " " << call.serials_map[b.first].first[i] << ((i == (b.second).back()) ? " }\n" : " , ");
       }
     }
     fileout << endl << endl << "HEALTHY map :" << endl;
-    for (auto it = healthy_map.begin(); it != healthy_map.end(); it++) {
-      fileout << std::setw(3) << it->first << "  ->  " << " ok " << endl;
+    for (const auto & h : healthy_map) {
+      fileout << std::setw(3) << h.first << "  ->  " << " ok " << endl;
     }
     fileout.close();
 
     // Amending answers and solutions
-    for (auto &exam : call.exams) {
-      if (bugs_map.find(exam.serial) != bugs_map.end()) {
-        for (int i : bugs_map[exam.serial]) {
+    for (auto & exam : call.exams) {
+      if (bugs_map.count(exam.serial) != 0) {
+        for (auto & i : bugs_map[exam.serial]) {
           exam.answers[i] = '-';
           exam.solutions[i] = '-';
         }
@@ -214,7 +212,7 @@ int main(int argc, char ** argv) {
         }
       }
     }
-    if (bugs_map.find(exam.serial) != bugs_map.end()) {
+    if (bugs_map.count(exam.serial) != 0) {
       exam.score = exam.pardon_score - bugs_map.find(exam.serial)->second.size()*correct_score;
     }
     else {
