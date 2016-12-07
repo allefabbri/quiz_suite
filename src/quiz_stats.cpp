@@ -87,13 +87,13 @@ int main(int argc, char ** argv) {
 
   // Total question result counters
   int tot_r = 0, tot_c = 0, tot_w = 0, tot_b = 0;
-  for (auto it = question_map.begin(); it != question_map.end(); it++) {
-    if (it->second.repetitions != it->second.correct + it->second.wrong + it->second.blank)
-      cout << "ERROR --- " << it->first << "  counters mismatch" << endl;
-    tot_r += it->second.repetitions;
-    tot_c += it->second.correct;
-    tot_w += it->second.wrong;
-    tot_b += it->second.blank;
+  for (auto & q : question_map) {
+    if (q.second.repetitions != q.second.correct + q.second.wrong + q.second.blank)
+      cout << "ERROR --- " << q.first << "  counters mismatch" << endl;
+    tot_r += q.second.repetitions;
+    tot_c += q.second.correct;
+    tot_w += q.second.wrong;
+    tot_b += q.second.blank;
   }
 
   // Evaluating grade bins
@@ -124,10 +124,10 @@ int main(int argc, char ** argv) {
     << "Call size         : " << call.exams.size() << " students" << endl
     << "Bugged exams      : " << endl;
   int tot = 0;
-  for (auto it = pardon_bins.begin(); it != pardon_bins.end(); it++) {
-    fileout << "\tBugs : " << setw(2) << it->first / 2 << " -> " << setw(3) << it->second << " ( "
-      << setw(5) << fixed << setprecision(1) << 100 * it->second / double(call.exams.size()) << " % ) " << endl;
-    tot += it->second;
+  for (const auto & b : pardon_bins) {
+    fileout << "\tBugs : " << setw(2) << b.first / 2 << " -> " << setw(3) << b.second << " ( "
+      << setw(5) << fixed << setprecision(1) << 100 * b.second / double(call.exams.size()) << " % ) " << endl;
+    tot += b.second;
   }
   fileout << "\tTotal -----> " << setw(3) << tot << " ( " << setw(5) << 100 * tot / double(call.exams.size()) << " % ) " << endl;
   fileout << "Tot questions     : " << call.exams.size()*call.exams[0].answers.size() << " = " << tot_r << endl;
@@ -146,18 +146,18 @@ int main(int argc, char ** argv) {
     << std::right << std::setw(pad_count + 2 * pad_perc + 2 + 7) << "WRONG"
     << std::right << std::setw(pad_count + 2 * pad_perc + 2 + 7) << "BLANK"
     << std::endl << std::endl;
-  for (auto it = question_map.begin(); it != question_map.end(); it++) {
-    fileout << std::left << std::setw(pad_name) << it->first << " ->"
-      << std::right << std::setw(pad_count) << it->second.repetitions << "  : "
-      << std::right << std::setw(pad_count) << it->second.correct << " ( "
-      << std::fixed << std::setprecision(1) << std::setw(pad_perc) << (float)it->second.correct / it->second.repetitions * 100 << " - "
-      << std::fixed << std::setprecision(1) << std::setw(pad_perc - 1) << binomial_dist(it->second.repetitions, it->second.correct, 0.25) * 100 << " %) "
-      << std::right << std::setw(pad_count) << it->second.wrong << " ( "
-      << std::fixed << std::setprecision(1) << std::setw(pad_perc) << (float)it->second.wrong / it->second.repetitions * 100 << " - "
-      << std::fixed << std::setprecision(1) << std::setw(pad_perc - 1) << binomial_dist(it->second.repetitions, it->second.wrong, 0.75) * 100 << " %) "
-      << std::right << std::setw(pad_count) << it->second.blank << " ( "
-      << std::fixed << std::setprecision(1) << std::setw(pad_perc) << (float)it->second.blank / it->second.repetitions * 100 << " - "
-      << std::fixed << std::setprecision(1) << std::setw(pad_perc - 1) << binomial_dist(it->second.repetitions, it->second.blank, 0.5) * 100 << " %) " << std::endl;
+  for (const auto & q : question_map) {
+    fileout << std::left << std::setw(pad_name) << q.first << " ->"
+      << std::right << std::setw(pad_count) << q.second.repetitions << "  : "
+      << std::right << std::setw(pad_count) << q.second.correct << " ( "
+      << std::fixed << std::setprecision(1) << std::setw(pad_perc) << (float)q.second.correct / q.second.repetitions * 100 << " - "
+      << std::fixed << std::setprecision(1) << std::setw(pad_perc - 1) << binomial_dist(q.second.repetitions, q.second.correct, 0.25) * 100 << " %) "
+      << std::right << std::setw(pad_count) << q.second.wrong << " ( "
+      << std::fixed << std::setprecision(1) << std::setw(pad_perc) << (float)q.second.wrong / q.second.repetitions * 100 << " - "
+      << std::fixed << std::setprecision(1) << std::setw(pad_perc - 1) << binomial_dist(q.second.repetitions, q.second.wrong, 0.75) * 100 << " %) "
+      << std::right << std::setw(pad_count) << q.second.blank << " ( "
+      << std::fixed << std::setprecision(1) << std::setw(pad_perc) << (float)q.second.blank / q.second.repetitions * 100 << " - "
+      << std::fixed << std::setprecision(1) << std::setw(pad_perc - 1) << binomial_dist(q.second.repetitions, q.second.blank, 0.5) * 100 << " %) " << std::endl;
   }
   fileout << std::string(pad_name + 4 + 4 * pad_count + 6 * pad_perc + 6 + 23, '-') << endl;
   fileout << setw(pad_name + 3) << "Total       ->" << std::setw(pad_count) << tot_r << "  : "
