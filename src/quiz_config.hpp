@@ -42,7 +42,7 @@ public:
   vector<vector <string>> slot_specs;
 
   // grade
-  string bugs_name, grade_report_basename, results_name;
+  string bugs_name, results_name;
   int choices_number;
   bool is_call_bugged;
 
@@ -132,9 +132,6 @@ public:
       // grade
       else if (key == "BUGS") {
         bugs_name = value;
-      }
-      else if (key == "GRADE_REPORT_BASEN") {
-        grade_report_basename = value;
       }
       else if (key == "RESULTS") {
         results_name = value;
@@ -289,7 +286,6 @@ public:
       fileout
         << "BUGS               = errors.txt" << endl
         << "SERIALS            = serials.txt" << endl
-        << "GRADE_REPORT_BASEN = call_1" << endl
         << "RESULTS            = results.txt" << endl
         << "GRADES_FILE        = grades.txt" << endl
         << "CHOICES            = 4" << endl
@@ -314,10 +310,6 @@ public:
     }
     if (this->serials_name == "") {
       cout << "SERIALS file unset. Edit " << this->config_name << endl;
-      ret = false;
-    }
-    if (this->grade_report_basename == "") {
-      cout << "REPORT BASENAME unset. Edit " << this->config_name << endl;
       ret = false;
     }
     if (this->results_name == "") {

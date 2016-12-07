@@ -113,9 +113,9 @@ int main(int argc, char ** argv) {
 
     // Dump LOG to file
     string flag;
-    ofstream fileout(c.work_folder + "/" + c.grade_report_basename + ".log");
+    ofstream fileout(c.work_folder + "/grade.log");
     if (!fileout) {
-      cout << "LOG file " << c.grade_report_basename << ".log impossible to create. Quitting..." << endl;
+      cout << "LOG file grade.log impossible to create. Quitting..." << endl;
       exit(6);
     }
     fileout << endl << "BUGGED question : " << error_list.size() << endl;
@@ -151,9 +151,9 @@ int main(int argc, char ** argv) {
     fileout.close();
 
     // Dumping BUGS and HEALTHY MAP to file
-    fileout.open(c.work_folder + "/" + c.grade_report_basename + ".bugs_map");
+    fileout.open(c.work_folder + "/grade.bugs_map");
     if (!fileout) {
-      cout << "BUGS MAP file " << c.grade_report_basename << ".bugs_map impossible to create. Quitting..." << endl;
+      cout << "BUGS MAP file grade.bugs_map impossible to create. Quitting..." << endl;
       exit(7);
     }
     fileout << "BUGGED serials  : " << bugs_map.size()
@@ -250,7 +250,7 @@ int main(int argc, char ** argv) {
     << wrong_score << endl
     << "Blank score       : " << fixed << setprecision(2) << setw(6)
     << 0.0 << endl << endl;
-  for (auto exam : call.exams) {
+  for (const auto & exam : call.exams) {
     fileout << exam.serial << "\t\t"
       << exam.answers << "\t"
       << exam.solutions << "\t\t"
