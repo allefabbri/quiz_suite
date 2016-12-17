@@ -94,6 +94,7 @@ string grade2outcome(vector<double> thresholds, double grade) {
 /////////////////////////////// QUIZ_STATS and QUIZ_QUERY
 class Outcome {
 public:
+  int serial;
   int correct, wrong, blank, bonus;
   double grade;
   vector<string> topics;

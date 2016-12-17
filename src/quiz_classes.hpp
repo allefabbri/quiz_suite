@@ -250,6 +250,7 @@ public:
     for (const auto & e : exams) {
       Outcome outcome;
       outcome.grade = e.grade_d;
+      outcome.serial = e.serial;
       for (size_t j = 0; j < e.answers.size(); j++) {
         if (e.solutions[j] == '-')               outcome.bonus++;
         else if (e.answers[j] == '-')            outcome.blank++;
@@ -258,7 +259,8 @@ public:
           outcome.wrong++;
           // recover suggested topics (if any)
           string question_name = serials_map[e.serial].second[j];
-          outcome.topics.push_back(topic_map[question_name]);
+          string topic = topic_map.count(question_name) ? topic_map[question_name] : ("No match for " + question_name);
+          outcome.topics.push_back(topic);
         }
       }
       // Remove duplicates

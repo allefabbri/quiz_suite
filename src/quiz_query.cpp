@@ -140,18 +140,17 @@ int main(int argc, char** argv) {
       auto om = &(call.outcome_map);    // to shorten code
       if (om->count(s)) {
         cout << "STUDENTE  : " << s << endl;
+        cout << "SERIALE   : " << om->at(s).serial << endl;
         cout << "VOTO      : " << om->at(s).grade << endl;
         cout << "CORRETTE  : " << om->at(s).correct << endl;
         if (om->at(s).bonus) cout << "BONUS     : " << om->at(s).bonus << endl;
         cout << "BIANCHE   : " << om->at(s).blank << endl;
         cout << "ERRATE    : " << om->at(s).wrong << endl;
-        cout << "RIPASSARE : ";
-        for (auto t : om->at(s).topics)
-          if (t.size())
-            cout << endl << "\t- " << t;
-          else
-            cout << "No match";
-        cout << endl << endl;
+        if ( om->at(s).wrong ){
+          cout << "RIPASSARE : " << endl;
+          for (auto t : om->at(s).topics) cout << "\t- " << t << endl;
+        }
+        cout << endl;
       }
       else {
         cout << "No match for student : " << s << endl;
