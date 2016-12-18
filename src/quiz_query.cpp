@@ -108,14 +108,16 @@ int main(int argc, char** argv) {
     }
     else if (argc == 4) {
       students_filename = argv[3];
-      string surname, name;
+      string line;
+      vector<string> tokens;
       ifstream filein(students_filename);
       if (!filein) {
         cerr << "Students file " << students_filename << " not found. Quitting..." << endl;
         exit(-2);
       }
-      while (filein >> surname >> name) {
-        students_name.push_back(surname + "\t" + name);
+      while (getline(filein, line)) {
+        split(tokens, line, is_any_of("\t"), token_compress_off);
+        students_name.push_back(tokens.front() + "\t" + tokens.back());
       }
       filein.close();
     }
@@ -128,7 +130,7 @@ int main(int argc, char** argv) {
     cout << "Topics file    : " << c.topics_name << endl;
     cout << "Student number : " << students_name.size() << endl;
 
-    // Call2 operations
+    // Call operations
     if (!call.parse_grades(&c))   exit(5);
     if (!call.make_topic_map(&c)) exit(7);
     if (!call.make_outcome_map()) exit(8);
