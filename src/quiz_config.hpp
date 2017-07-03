@@ -78,7 +78,7 @@ public:
       if (key == "GRADES_FILE") {
         grades_name = value;
       }
-      else if (key == "SERIALS") {
+      else if (key == "SERIALS_FILE") {
         serials_name = value;
       }
       else if (key == "WORK_FOLDER") {
@@ -285,7 +285,7 @@ public:
       std::ofstream fileout("grade.config");
       fileout
         << "BUGS               = errors.txt" << endl
-        << "SERIALS            = serials.txt" << endl
+        << "SERIALS_FILE       = serials.txt" << endl
         << "RESULTS            = results.txt" << endl
         << "GRADES_FILE        = grades.txt" << endl
         << "CHOICES            = 4" << endl
@@ -309,7 +309,7 @@ public:
       this->is_call_bugged = true;
     }
     if (this->serials_name == "") {
-      cout << "SERIALS file unset. Edit " << this->config_name << endl;
+      cout << "SERIALS_FILE unset. Edit " << this->config_name << endl;
       ret = false;
     }
     if (this->results_name == "") {
@@ -317,7 +317,7 @@ public:
       ret = false;
     }
     if (this->grades_name == "") {
-      cout << "GRADES file unset. Edit " << this->config_name << endl;
+      cout << "GRADES_FILE file unset. Edit " << this->config_name << endl;
       ret = false;
     }
     if (this->choices_number == -1) {
@@ -402,7 +402,7 @@ public:
       this->make_public_correction = true;
     }
     if (this->grades_name == "") {
-      cout << "GRADES FILE unset. Edit " << this->config_name << endl;
+      cout << "GRADES_FILE unset. Edit " << this->config_name << endl;
       ret = false;
     }
     return ret;
@@ -423,7 +423,7 @@ public:
       fileout
         << "WORK_FOLDER  = call1" << endl
         << "GRADES_FILE  = grades.txt" << endl
-        << "SERIALS      = serials.txt" << endl
+        << "SERIALS_FILE = serials.txt" << endl
         << "STATS_REPORT = stats.txt" << endl
         << "BINS         = [ 0 10 20 30 ]" << endl << endl;
       fileout.close();
@@ -440,11 +440,11 @@ public:
       ret = false;
     }
     if (this->grades_name == "") {
-      cout << "GRADES file unset. Edit " << this->config_name << endl;
+      cout << "GRADES_FILE unset. Edit " << this->config_name << endl;
       ret = false;
     }
     if (this->serials_name == "") {
-      cout << "SERIALS file unset. Edit " << this->config_name << endl;
+      cout << "SERIALS_FILE unset. Edit " << this->config_name << endl;
       ret = false;
     }
     if (this->stat_report == "") {
@@ -471,10 +471,10 @@ public:
       cout << "Generating empty config file \"query.config\"" << endl;
       std::ofstream config("query.config");
       config
-        << "SERIALS     = serials.txt" << endl
-        << "GRADES_FILE = voti.txt" << endl
-        << "TOPICS_FILE = topics.txt" << endl
-        << "WORK_FOLDER = appello1" << endl << endl;
+        << "SERIALS_FILE = serials.txt" << endl
+        << "GRADES_FILE  = voti.txt" << endl
+        << "TOPICS_FILE  = topics.txt" << endl
+        << "WORK_FOLDER  = appello1" << endl << endl;
       config.close();
       exit(-1);
     }
@@ -484,11 +484,11 @@ public:
   bool check_params() {
     bool ret = true;
     if (this->grades_name == "") {
-      cerr << "GRADES file unset. Edit " << this->config_name << endl;
+      cerr << "GRADES_FILE unset. Edit " << this->config_name << endl;
       ret = false;
     }
     if (this->serials_name == "") {
-      cerr << "SERIALS file unset. Edit " << this->config_name << endl;
+      cerr << "SERIALS_FILE unset. Edit " << this->config_name << endl;
       ret = false;
     }
     if (this->topics_name == "") {

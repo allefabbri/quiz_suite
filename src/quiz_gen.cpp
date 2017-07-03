@@ -104,7 +104,7 @@ int main(int argc, char ** argv) {
   file_path = c.work_folder + "/database-form.tex";
   std::ofstream fileout(file_path);
   if (!fileout) {
-    cerr << "LATEX DATABASE content " << file_path << " impossible to create. Quitting..." << endl;
+    cerr << "LATEX DATABASE form " << file_path << " impossible to create. Quitting..." << endl;
     exit(15);
   }
   fileout << database_form(call);
@@ -179,7 +179,7 @@ int main(int argc, char ** argv) {
     file_path = c.work_folder + "/exam-form.tex";
     fileout.open(file_path);
     if (!fileout) {
-      cerr << "LATEX DATABASE content " << file_path << " impossible to create. Quitting..." << endl;
+      cerr << "LATEX EXAM form " << file_path << " impossible to create. Quitting..." << endl;
       exit(15);
     }
     fileout << exam_form(call);
