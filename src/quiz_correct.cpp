@@ -176,7 +176,7 @@ int main(int argc, char ** argv) {
   }
 
   // Command line suggestion
-  cout << "To generate the pdf's please type :\ncd " << c.work_folder << " && for form in *-form.tex; do pdflatex.exe $form; done && cd -" << endl;
+  cout << "To generate the pdf's please type :\ncd " << c.work_folder << " && for form in *-form.tex; do pdflatex" << EXE_EXTENSION << " $form; done && cd -" << endl;
 
   return 0;
 }

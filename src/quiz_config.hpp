@@ -21,6 +21,12 @@
 #define _SCL_SECURE_NO_WARNINGS
 #endif
 
+#ifdef WIN32
+#define EXE_EXTENSION ".exe"
+#else
+#define EXE_EXTENSION ""
+#endif
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>
