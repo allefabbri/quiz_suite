@@ -498,7 +498,7 @@ public:
       ret = false;
     }
     if (this->topics_name == "") {
-      cerr << "TOPICS file unset. Edit " << this->config_name << endl;
+      cerr << "TOPICS_FILE file unset. Edit " << this->config_name << endl;
       ret = false;
     }
     if (this->work_folder == "") {
