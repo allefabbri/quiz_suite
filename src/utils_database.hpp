@@ -22,7 +22,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include "quiz_classes.hpp"
+#include <utils_classes.hpp>
 
 using namespace std;
 using namespace boost::filesystem;
@@ -62,7 +62,7 @@ public:
 
 
   ////////////////////////// IMPORTING
-  // Parse db folder and store filenames 
+  // Parse db folder and store filenames
   // in slots (according to config regex params)
   // [ [ "slot1_quiz1_file" , "slot1_quiz2_file" ,...  ] , [ "slot2_quiz1_file" , "slot2_quiz2_file" ,...  ] ]
   // also check slots' sizes and fail if any is empty

@@ -15,8 +15,8 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include "quiz_config.hpp"
-#include "quiz_classes.hpp"  
+#include <utils_config.hpp>
+#include <utils_classes.hpp>
 
 typedef Call<GradedExam>       QueryCall;
 typedef QueryConfig<QueryCall> QueryConf;
@@ -37,7 +37,7 @@ void usage(char* progname) {
 
 MODE   : serial
 INFO   : query for exam composition by serial
-PARAMS - Mode 1 : serial quiz_number          
+PARAMS - Mode 1 : serial quiz_number
          Return : quiz_name
 PARAMS - Mode 2 : serial quiz_number1 : quiz_number2
          Return : list of quiz_name

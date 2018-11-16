@@ -105,7 +105,7 @@ public:
 
 
 
-/////////////////////////////// QUIZ_STATS 
+/////////////////////////////// QUIZ_STATS
 class Question_param {
 public:
   int repetitions, correct, wrong, blank;

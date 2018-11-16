@@ -15,8 +15,8 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include "quiz_config.hpp"
-#include "latex_utils.hpp"
+#include <utils_config.hpp>
+#include <utils_latex.hpp>
 
 typedef Call<GradedExam>                 CorrectionCall;
 typedef CorrectionConfig<CorrectionCall> CorrectionConf;

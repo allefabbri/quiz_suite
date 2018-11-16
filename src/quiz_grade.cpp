@@ -15,8 +15,8 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include "quiz_config.hpp"
-#include "quiz_classes.hpp"
+#include <utils_config.hpp>
+#include <utils_classes.hpp>
 
 typedef Call<PendingExam>      GradeCall;
 typedef GradeConfig<GradeCall> GradeConf;
@@ -104,7 +104,7 @@ int main(int argc, char ** argv) {
       for (int i = 0; i < s.second.second.size(); i++) {
         for (auto err : error_list) {
           if (s.second.second[i] == err) {
-            bugs_map[s.first].push_back(i);                               // storing bugs positions            
+            bugs_map[s.first].push_back(i);                               // storing bugs positions
           }
         }
       }

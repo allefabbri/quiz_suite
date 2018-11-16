@@ -15,8 +15,8 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include "quiz_config.hpp"
-#include "quiz_classes.hpp"
+#include <utils_config.hpp>
+#include <utils_classes.hpp>
 
 typedef Call<GradedExam>       StatsCall;
 typedef StatsConfig<StatsCall> StatsConf;
@@ -54,7 +54,7 @@ int main(int argc, char ** argv) {
   //int exam_number = 0;
   int pad_name = 0;
   map<int, int> pardon_bins;
-  
+
   // Create config
   StatsCall call;
   StatsConf c(config_name, &call);

@@ -15,9 +15,9 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include "quiz_config.hpp"
-#include "latex_utils.hpp"
-#include "quiz_database.hpp"
+#include <utils_config.hpp>
+#include <utils_latex.hpp>
+#include <utils_database.hpp>
 
 typedef Call<BaseExam>     GenCall;
 typedef GenConfig<GenCall> GenConf;
@@ -90,7 +90,7 @@ int main(int argc, char ** argv) {
     exam.serial = c.starting_serial + i;
     // extract fully randomized question set from db
     exam.questions = database.get_rnd_question_set(r);
-    // create solution string for each exam 
+    // create solution string for each exam
     for (auto &q : exam.questions) {
       for (size_t j = 0; j < q.answers.size(); j++) {
         if (q.answers[j].second == true) exam.solutions.push_back('A' + char(j));
@@ -127,7 +127,7 @@ int main(int argc, char ** argv) {
   Total quiz & Total slots & Ave quiz per slot & Possible different exams \\ \hline)" << endl
   << database.size() << " & " << database.slot_size() << " & "
   << fixed << setprecision(1) << database.ave_question_per_slot()
-    << " & " << num_to_latex_scientific(database.possible_exams()) << R"( \\ \hline 
+    << " & " << num_to_latex_scientific(database.possible_exams()) << R"( \\ \hline
 \end{tabular}
     \end{center}
 

@@ -19,12 +19,15 @@
 
 #include <sstream>
 
-#include "quiz_classes.hpp"
+#include <utils_classes.hpp>
 
 //////////////////////////////////////////// GENERAL
 const char * latex_header = R"(
 \documentclass[11pt,a4paper]{article}
 \usepackage{amsfonts,amsmath,latexsym,color}
+%%% for drawings
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathmorphing,patterns,decorations.markings,calc,fadings,decorations.pathreplacing}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \voffset        -2.0cm
 \oddsidemargin  -1.3cm
@@ -60,8 +63,8 @@ Corso di Laurea in Ingegneria dell'Automazione e Ingegneria dell'Energia Elettri
 
 string exam_tex_instructions(double correct, double blank, double wrong){
   stringstream ss;
-  ss << "\\underline{ISTRUZIONI}: Compilare la tabella sottostante con la lettera corrispondente all'\\textbf{unica} risposta esatta per ciascun quesito. " 
-     << "Ogni risposta esatta vale \\textbf{" << fixed << setprecision(2) << correct 
+  ss << "\\underline{ISTRUZIONI}: Compilare la tabella sottostante con la lettera corrispondente all'\\textbf{unica} risposta esatta per ciascun quesito. "
+     << "Ogni risposta esatta vale \\textbf{" << fixed << setprecision(2) << correct
      << " punti}, ogni risposta lasciata in bianco vale \\textbf{" << fixed << setprecision(2) << blank
      << " punti}, ogni risposta errata vale \\textbf{" << fixed << setprecision(2) << wrong << " punti}.";
 
@@ -111,7 +114,7 @@ template<typename Call_t> string exam_form(Call_t call) {
  \begin{center}
 \LARGE
 {\sc )" << call.course << R"(}\\
-\Large)" << call.date << " - " << call.tag << R"(\\)" << endl
+\Large )" << call.date << " - " << call.tag << R"(\\)" << endl
 << call.cdl << R"(\\
 \end{center}
 \ \\
@@ -204,13 +207,13 @@ template<typename Call_t> string corrections_form(Call_t call) {
 
   ss << R"(
 %%% Print this on each test, after the questions
-\newcommand{\paperfooter}{LEGENDA: 
+\newcommand{\paperfooter}{LEGENDA:
 
-\textcolor{green}{Risposta corretta} 
+\textcolor{green}{Risposta corretta}
 
-\textcolor{red}{Risposta errata} 
+\textcolor{red}{Risposta errata}
 
-\textcolor{black}{Risposta mancante}  
+\textcolor{black}{Risposta mancante}
 }
 
 )";
@@ -245,13 +248,13 @@ template<typename Call_t> string public_form(Call_t call) {
 
   ss << R"(
 %%% Print this on each test, after the questions
-\newcommand{\paperfooter}{LEGENDA: 
+\newcommand{\paperfooter}{LEGENDA:
 
-\textcolor{green}{Risposta corretta} 
+\textcolor{green}{Risposta corretta}
 
-\textcolor{red}{Risposta errata} 
+\textcolor{red}{Risposta errata}
 
-\textcolor{black}{Risposta mancante}  
+\textcolor{black}{Risposta mancante}
 }
 
 )";

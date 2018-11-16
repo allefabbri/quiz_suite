@@ -25,7 +25,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "quiz_utils.hpp"
+#include <utils_misc.hpp>
 
 using namespace std;
 using namespace boost::algorithm;
@@ -40,7 +40,8 @@ public:
   BaseQuestion() {};
   BaseQuestion(const string & filepath) {
     string line;
-    vector<string> all_lines, tokens;
+    vector<string> all_lines(1), tokens;
+
     std::ifstream filein(filepath);
     while (std::getline(filein, line)) {
       if (line[0] != '.' && line[0] != '#' && line.size() != 0 && line != "\n") {
@@ -48,9 +49,9 @@ public:
       }
     }
     filein.close();
-    split(tokens, filepath, is_any_of("/\\"), token_compress_on);
 
     path = filepath;
+    split(tokens, filepath, is_any_of("/\\"), token_compress_on);
     name = tokens.back();
     text = all_lines[0];
     for (size_t k = 1; k < all_lines.size(); k++) {
@@ -63,7 +64,7 @@ public:
 
 /////////////////////////////// EXAM classes
 
-// An empty exam, for generating 
+// An empty exam, for generating
 class BaseExam {
 public:
   int serial;                                               // for generating/grading/corrections
@@ -75,7 +76,7 @@ public:
   BaseExam() {};
 };
 
-// A student answered exam, for grading 
+// A student answered exam, for grading
 class PendingExam : public BaseExam {
 public:
   PendingExam(vector<string> tokens) {
@@ -209,9 +210,9 @@ public:
   //////// TOPICS
   // Creates topic map
   // line sample : quiz-1-name Suggested topics
-  // map sample : { "quiz-1-name" , "Suggested topics" } 
+  // map sample : { "quiz-1-name" , "Suggested topics" }
   map<string, string> topic_map;
-  
+
   template<typename Conf_t> bool make_topic_map(const Conf_t * configptr) {
     bool ret = true;
     map<string, string> map;
