@@ -195,3 +195,4 @@ output*/
 .DS_Store
 *.db
 
+cmake/
