@@ -40,7 +40,7 @@ public:
   BaseQuestion() {};
   BaseQuestion(const string & filepath) {
     string line;
-    vector<string> all_lines(1), tokens;
+    vector<string> all_lines, tokens;
 
     std::ifstream filein(filepath);
     while (std::getline(filein, line)) {

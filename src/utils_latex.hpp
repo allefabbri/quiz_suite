@@ -25,6 +25,7 @@
 const char * latex_header = R"(
 \documentclass[11pt,a4paper]{article}
 \usepackage{amsfonts,amsmath,latexsym,color}
+\usepackage{siunitx}
 %%% for drawings
 \usepackage{tikz}
 \usetikzlibrary{decorations.pathmorphing,patterns,decorations.markings,calc,fadings,decorations.pathreplacing}
