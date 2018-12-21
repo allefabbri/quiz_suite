@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 """
 // Copyright 2015, Alessandro Fabbri
 
@@ -16,9 +17,6 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 """
-
-#! /usr/bin/env python3
-
 import sys
 
 if len(sys.argv) > 1:
