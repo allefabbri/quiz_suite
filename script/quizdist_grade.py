@@ -70,52 +70,66 @@ def histoplot(freq, cnt, cumul, bins, ax, title, xlabel, ylabel, y2label, color)
 input = sys.argv[1]
 outcome = pd.read_csv(input, skiprows=9, header=None, sep='[\t]+', engine='python')
 outcome.columns = ['serial', 'answers', 'results', 'score', 'amended_score', 'delta_score', 'grade_d', 'grade', 'surname', 'name']
-
-### call outcome
-# score
-ranges=np.arange(-10,32,1)
-s_freq, s_bins = np.histogram(outcome.score, bins=ranges, density=True)
-s_cnt, s_bins = np.histogram(outcome.score, bins=ranges)
-s_cumul = np.cumsum(s_freq)
-s_bins = np.array(s_bins[:-1])
-
-# grades
-ranges=np.arange(0,32,1)
-corrected_grade = outcome.grade + 2
-g_freq, g_bins = np.histogram(corrected_grade, bins=ranges, density=True)
-g_cnt, g_bins = np.histogram(corrected_grade, bins=ranges)
-g_cumul = np.cumsum(g_freq)
-g_bins = np.array(g_bins[:-1])
-
-# dump
-outcome['grade_corrected'] = corrected_grade
-outcome[['surname', 'name', 'score', 'grade', 'grade_corrected']].to_csv(input.split('.')[-2] + '-resume.txt',
-                                                                         index=False, sep='\t')
-
-# plot
-fig, (ax1, ax2) = plt.subplots(1,2, figsize=(12, 5))
-histoplot(s_freq, s_cnt, s_cumul, s_bins, ax1,
-          title='Score Distribution', xlabel='Score', ylabel='Fraction', y2label='Cumulative', color='#35a7ff')
-histoplot(g_freq, g_cnt, g_cumul, g_bins, ax2,
-          title='Grade Distribution', xlabel='Grade', ylabel='Fraction', y2label='Cumulative', color='green')
-plt.subplots_adjust(left=0.07, wspace=0.4)
-plt.savefig(input.split('.')[-2] + '.png')
-plt.clf()
-
-### answers
-# values
 ans_len = []
 for ans in outcome.answers:
   ans_len.append(len(ans) - ans.count('-'))
 ans_len = np.array(ans_len)
-ranges=np.arange(0,32,1)
-freq, bins = np.histogram(ans_len, bins=ranges, density=True)
-cnt, bins = np.histogram(ans_len, bins=ranges)
-cumul = np.cumsum(freq)
-bins = np.array(bins[:-1])
+###
+corrected_grade = outcome.grade + 2
+###
 
+### stats
+def computestats(data, ranges):
+  freq, bins = np.histogram(data, bins=ranges, density=True)
+  cnt, bins = np.histogram(data, bins=ranges)
+  cumul = np.cumsum(freq)
+  bins = np.array(bins[:-1])
+  mu = np.sum([ f*v for f,v in zip(freq, bins)])
+  for c, v in zip(cumul, bins):
+    if c >= 0.5:
+      median = 0.5*(v + v - 1)
+      break
+  sigma = np.sqrt(np.sum([ f*v**2 for f,v in zip(freq, bins)]) - mu**2)
+  return (freq, cnt, cumul, bins, mu, median, sigma)
+
+ranges=np.arange(-10,32,1)
+(s_freq, s_cnt, s_cumul, s_bins, s_mu, s_median, s_sigma) = computestats(outcome.score, ranges)
+ranges=np.arange(0,32,1)
+(g_freq, g_cnt, g_cumul, g_bins, g_mu, g_median, g_sigma) = computestats(corrected_grade, ranges)
+(c_freq, c_cnt, c_cumul, c_bins, c_mu, c_median, c_sigma) = computestats(outcome.grade, ranges)
+(a_freq, a_cnt, a_cumul, a_bins, a_mu, a_median, a_sigma) = computestats(ans_len, ranges)
+ranges=np.arange(0,10,1)
+(b_freq, b_cnt, b_cumul, b_bins, b_mu, b_median, b_sigma) = computestats(outcome.delta_score, ranges)
+
+### dump
+outcome['grade_corrected'] = corrected_grade
+outcome[['surname', 'name', 'score', 'grade', 'grade_corrected']].to_csv(input.split('.')[-2] + '-resume.txt',
+                                                                         index=False, sep='\t')
 # plot
-fig, ax1 = plt.subplots(1,1, figsize=(7, 5))
-histoplot(freq, cnt, cumul, bins, ax1,
+fig, axis = plt.subplots(2,2, figsize=(10, 8))
+histoplot(a_freq, a_cnt, a_cumul, a_bins, axis[0,0],
           title='Number of answers distribution', xlabel='Number of answers', ylabel='Fraction', y2label='Cumulative', color='#35a7ff')
-plt.savefig(input.split('.')[-2] + '-answers.png')
+histoplot(g_freq, g_cnt, g_cumul, g_bins, axis[0,1],
+          title='Grade Distribution', xlabel='Grade', ylabel='Fraction', y2label='Cumulative', color='green')
+histoplot(b_freq, b_cnt, b_cumul, b_bins, axis[1,0],
+          title='Bugs Distribution', xlabel='Number of bugs', ylabel='Fraction', y2label='Cumulative', color='red')
+# final stats report
+textstr = '\n'.join((
+  r'GRADE avg   = %.2f' % (g_mu, ),
+  r'GRADE med   = %.2f' % (g_median, ),
+  r'GRADE sigma = %.2f' % (g_sigma, ),
+  r'',
+  r'ANS avg   = %.2f' % (a_mu, ),
+  r'ANS med   = %.2f' % (a_median, ),
+  r'ANS sigma = %.2f' % (a_sigma, ),
+  r'',
+  r'BUGS avg   = %.2f' % (b_mu, ),
+  r'BUGS med   = %.2f' % (b_median, ),
+  r'BUGS sigma = %.2f' % (b_sigma, )
+))
+axis[1,1].axis('off')
+axis[1,1].text(0.0, 1.0, textstr, transform=axis[1,1].transAxes, fontfamily='monospace', fontsize=14, verticalalignment='top')
+#
+plt.subplots_adjust(left=0.1, wspace=0.4, hspace=0.3)
+plt.savefig(input.split('.')[-2] + '.png')
+plt.clf()

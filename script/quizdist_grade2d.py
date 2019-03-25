@@ -124,35 +124,11 @@ for i in answers:
     freq[i][j] = f
     cnt[i][j] = c
 
-print(np.shape(freq))
-print(np.shape(cnt))
-print(freq.keys())
-print(freq['exact'].keys())
-for k in freq:
-  for l in freq[k]:
-    print(k, l, np.shape(freq[k][l]))
-"""
-# plot each combination
-bins = np.array(binx[:-1]) # for plotting purpose
-for i in ['exact']:
-  for j in k2:
-    fig, ((ax11, ax21), (ax12, ax22)) = plt.subplots(2, 2, figsize=(8,8))
-    histo2dplot(freq[i][j], cnt[i][j], binx, biny, ax=ax22,
-                  xlabel='Number of ' + i + ' answers', ylabel='Value of ' + j)
-    histoplot(np.sum(freq[i][j], 1), np.sum(cnt[i][j], 1), np.cumsum(np.sum(freq[i][j],1)), bins, ax=ax21,
-                  title='', xlabel='Number of ' + i + ' answers', ylabel='Freq', y2label='Cumulative', color='green')
-    histoplot(np.sum(freq[i][j], 0), np.sum(cnt[i][j], 0), np.cumsum(np.sum(freq[i][j],0)), bins, ax=ax12,
-                  title='', xlabel='Value of ' + j, ylabel='Freq', y2label='Cumulative', color='red')
-    histo2dplot(freq[i][j], cnt[i][j], binx, biny, ax=ax11,
-                  xlabel='Number of ' + i + ' answers', ylabel='Value of ' + j)
-    plt.subplots_adjust(hspace=0.45, wspace=0.45)
-    plt.savefig(input.split('.')[-2] + '-cross_' + i + '_' + j + '.png')
-    plt.clf()
-"""
-
+import itertools
 fig, ((ax11, ax21), (ax12, ax22)) = plt.subplots(2, 2, figsize=(8,8))
-for i in ['exact']:
-  for j, ax in zip(k2, [ax11, ax21, ax12, ax22]):
+for j in k2:
+  for i, ax in list(itertools.product(answers, [ax11, ax21, ax12, ax22])):
+  #for j, ax in zip(k2, [ax11, ax21, ax12, ax22]):
     histo2dplot(freq[i][j], cnt[i][j], binx, biny, ax=ax,
               xlabel='Number of ' + i + ' answers', ylabel='Value of ' + j)
   plt.subplots_adjust(hspace=0.45, wspace=0.45)
