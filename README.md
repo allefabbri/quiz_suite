@@ -8,6 +8,7 @@ Content of the suite:
 - `quiz_correct :` correction generator
 - `quiz_stat    :` statistical analyzer of the results
 
+
 ### Installation and Requirements
 The program is distributed open-source and comes equipped with a makefile and also a VS solution. There are also two scripts, bash and PowerShell, to pilot the generator and automate the process.
 
@@ -16,8 +17,9 @@ What you need:
 - the [Boost libraries](http://www.boost.org/) (under VS Nuget is configured to manage the library autonomously while with make you have to install it in system's path or edit the makefile according to your system specs)
 - [Gnuplot](http://www.gnuplot.info/)
 
-### Usage    
-The suite is intended as a unique sequential series of tools which help the instructor in handling the various step of the examination process. 
+
+### Usage
+The suite is intended as a unique sequential series of tools which help the instructor in handling the various step of the examination process.
 
 Every tool of the suite is used essentially in the same way
 ```
