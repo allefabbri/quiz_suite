@@ -140,21 +140,24 @@ public:
   }
   // Import SERIALS file to map
   // layout { serial number, question_name1, question_name2, ... , question_nameN, correct_answer }
-  template<typename Conf_t> bool parse_serial(const Conf_t * confptr) {
+  template<typename Conf_t> bool parse_serial(const Conf_t * confptr)
+  {
     bool ret = true;
     string file_path = confptr->work_folder + "/" + confptr->serials_name;
     ifstream filein(file_path);
-    if (!filein) {
+    if (!filein)
+    {
       cout << "SERIALS file " << file_path << " not found. Quitting..." << endl;
       ret = false;
     }
     string line;
     vector<string> tokens;
-    while (getline(filein, line)) {
+    while (getline(filein, line))
+    {
       trim(line);
       if (line[0] == '%') continue;
       split(tokens, line, is_any_of("\t "), token_compress_on);
-      if (tokens.size() > 6) add_serial(tokens);   // to skip segfault causing lines, if any
+      if (tokens.size() > 3) add_serial(tokens);   // to skip segfault causing lines, if any
     }
     filein.close();
     return ret;
