@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 """
 // Copyright 2015, Alessandro Fabbri
 
@@ -17,22 +19,16 @@
 ************************************************************************/
 """
 
-#! /usr/bin/env python3
-
-import sys
-import os
-
-if len(sys.argv) > 1:
-  input = sys.argv[1]
-else:
-  print("Usage : " + sys.argv[0].split(os.sep)[-1] + " path/to/serials")
-  exit(1)
-
-
 import pandas as pd
 import numpy as np
+import argparse
 
-serials = pd.read_csv(input, skiprows=1, header=None, sep='\t', engine='python')
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", "--input", help="serials file", required=True)
+args = parser.parse_args()
+ser_file = args.input
+
+serials = pd.read_csv(ser_file, skiprows=1, header=None, sep='\t', engine='python')
 sorted_serials = [ list(row[1][2:len(row[1])-1]) for row in serials.iterrows()]
 [ s.sort() for s in sorted_serials]
 
@@ -111,4 +107,4 @@ import matplotlib.pyplot as plt
 fig, ax1 = plt.subplots(1,1, figsize=(7, 5))
 histoplot(freq, cnt, cumul, bins, ax1,
           title='Pair of exam \'distance\' distribution', xlabel='Number of repeated answers', ylabel='Fraction', y2label='Cumulative', color='#35a7ff')
-plt.savefig(input.split('.')[-2] + '.png')
+plt.savefig(ser_file.split('.')[-2] + '.png')

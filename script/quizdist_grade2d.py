@@ -18,18 +18,15 @@
 ************************************************************************/
 """
 
-import sys
-
-if len(sys.argv) > 1:
-  input = sys.argv[1]
-else:
-  print("Usage : " + sys.argv[0].split('/')[-1] + " path/to/grades")
-  exit(1)
-
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", "--input", help="grades file", required=True)
+args = parser.parse_args()
+grade_file = args.input
 
 def histoplot(freq, cnt, cumul, bins, ax, title, xlabel, ylabel, y2label, color):
   ax.bar(bins, freq, color=color)
@@ -83,10 +80,9 @@ def histo2dplot(freq, cnt, binx, biny, ax, xlabel, ylabel):
   return ax
 
 # import data
-input = sys.argv[1]
-outcome = pd.read_csv(input, skiprows=9, header=None, sep='[\t]+', engine='python')
+outcome = pd.read_csv(grade_file, skiprows=9, header=None, sep='[\t]+', engine='python')
 outcome.columns = ['serial', 'answers', 'results', 'score', 'amended_score', 'delta_score', 'grade_d', 'grade', 'surname', 'name']
-
+print(outcome.head)
 ### answers
 # values
 answers = { 'exact' : [], 'wrong' : [], 'blank' : [], 'tot' : [] }
@@ -132,7 +128,7 @@ for j in k2:
     histo2dplot(freq[i][j], cnt[i][j], binx, biny, ax=ax,
               xlabel='Number of ' + i + ' answers', ylabel='Value of ' + j)
   plt.subplots_adjust(hspace=0.45, wspace=0.45)
-  plt.savefig(input.split('.')[-2] + '-joint_' + i + '_answers.png')
+  plt.savefig(grade_file.split('.')[-2] + '-joint_' + i + '_answers.png')
 plt.clf()
 
 
@@ -167,7 +163,7 @@ for at, ax in zip(answers, [ax11, ax12, ax21, ax22]):
   histoplot(freq[at], cnt[at], cumul[at], bins, ax,
           title='Distributions', xlabel=params['xlabel'][at], ylabel='Fraction', y2label='Cumulative', color=params['color'][at])
 plt.subplots_adjust(hspace=0.35, wspace=0.45)
-plt.savefig(input.split('.')[-2] + '-2d.png')
+plt.savefig(grade_file.split('.')[-2] + '-2d.png')
 
 
 

@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+
 """
 // Copyright 2015, Alessandro Fabbri
 
@@ -17,18 +18,16 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 """
-import sys
-
-if len(sys.argv) > 1:
-  input = sys.argv[1]
-else:
-  print("Usage : " + sys.argv[0].split('/')[-1] + " path/to/grades")
-  exit(1)
-
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", "--input", help="grades file", required=True)
+args = parser.parse_args()
+grade_file = args.input
 
 def histoplot(freq, cnt, cumul, bins, ax, title, xlabel, ylabel, y2label, color):
   ax.bar(bins, freq, color=color)
@@ -67,8 +66,7 @@ def histoplot(freq, cnt, cumul, bins, ax, title, xlabel, ylabel, y2label, color)
   ax2.set_ylabel(y2label)
 
 # import data
-input = sys.argv[1]
-outcome = pd.read_csv(input, skiprows=9, header=None, sep='[\t]+', engine='python')
+outcome = pd.read_csv(grade_file, skiprows=9, header=None, sep='[\t]+', engine='python')
 outcome.columns = ['serial', 'answers', 'results', 'score', 'amended_score', 'delta_score', 'grade_d', 'grade', 'surname', 'name']
 ans_len = []
 for ans in outcome.answers:
@@ -95,7 +93,8 @@ def computestats(data, ranges):
 ranges=np.arange(-10,32,1)
 (s_freq, s_cnt, s_cumul, s_bins, s_mu, s_median, s_sigma) = computestats(outcome.score, ranges)
 ranges=np.arange(0,32,1)
-(g_freq, g_cnt, g_cumul, g_bins, g_mu, g_median, g_sigma) = computestats(corrected_grade, ranges)
+(g_freq, g_cnt, g_cumul, g_bins, g_mu, g_median, g_sigma) = computestats(outcome.grade, ranges)
+#(g_freq, g_cnt, g_cumul, g_bins, g_mu, g_median, g_sigma) = computestats(corrected_grade, ranges)
 (c_freq, c_cnt, c_cumul, c_bins, c_mu, c_median, c_sigma) = computestats(outcome.grade, ranges)
 (a_freq, a_cnt, a_cumul, a_bins, a_mu, a_median, a_sigma) = computestats(ans_len, ranges)
 ranges=np.arange(0,10,1)
@@ -103,7 +102,7 @@ ranges=np.arange(0,10,1)
 
 ### dump
 outcome['grade_corrected'] = corrected_grade
-outcome[['surname', 'name', 'score', 'grade', 'grade_corrected']].to_csv(input.split('.')[-2] + '-resume.txt',
+outcome[['surname', 'name', 'score', 'grade', 'grade_corrected']].to_csv(grade_file.split('.')[-2] + '-resume.txt',
                                                                          index=False, sep='\t')
 # plot
 fig, axis = plt.subplots(2,2, figsize=(10, 8))
@@ -131,5 +130,5 @@ axis[1,1].axis('off')
 axis[1,1].text(0.0, 1.0, textstr, transform=axis[1,1].transAxes, fontfamily='monospace', fontsize=14, verticalalignment='top')
 #
 plt.subplots_adjust(left=0.1, wspace=0.4, hspace=0.3)
-plt.savefig(input.split('.')[-2] + '.png')
+plt.savefig(grade_file.split('.')[-2] + '.png')
 plt.clf()
