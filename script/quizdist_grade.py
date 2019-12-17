@@ -74,6 +74,7 @@ for ans in outcome.answers:
 ans_len = np.array(ans_len)
 ###
 corrected_grade = outcome.grade + 2
+corrected_grade[ corrected_grade > 30 ] = 30
 ###
 
 ### stats
@@ -94,7 +95,7 @@ ranges=np.arange(-10,32,1)
 (s_freq, s_cnt, s_cumul, s_bins, s_mu, s_median, s_sigma) = computestats(outcome.score, ranges)
 ranges=np.arange(0,32,1)
 (g_freq, g_cnt, g_cumul, g_bins, g_mu, g_median, g_sigma) = computestats(outcome.grade, ranges)
-#(g_freq, g_cnt, g_cumul, g_bins, g_mu, g_median, g_sigma) = computestats(corrected_grade, ranges)
+(gc_freq, gc_cnt, gc_cumul, gc_bins, gc_mu, gc_median, gc_sigma) = computestats(corrected_grade, ranges)
 (c_freq, c_cnt, c_cumul, c_bins, c_mu, c_median, c_sigma) = computestats(outcome.grade, ranges)
 (a_freq, a_cnt, a_cumul, a_bins, a_mu, a_median, a_sigma) = computestats(ans_len, ranges)
 ranges=np.arange(0,10,1)
@@ -102,29 +103,28 @@ ranges=np.arange(0,10,1)
 
 ### dump
 outcome['grade_corrected'] = corrected_grade
-outcome[['surname', 'name', 'score', 'grade', 'grade_corrected']].to_csv(grade_file.split('.')[-2] + '-resume.txt',
-                                                                         index=False, sep='\t')
+outcome[['surname', 'name', 'score', 'grade', 'grade_corrected']].to_csv(grade_file.split('.')[-2] + '-resume.txt',index=False, sep='\t')
+
 # plot
 fig, axis = plt.subplots(2,2, figsize=(10, 8))
-histoplot(a_freq, a_cnt, a_cumul, a_bins, axis[0,0],
-          title='Number of answers distribution', xlabel='Number of answers', ylabel='Fraction', y2label='Cumulative', color='#35a7ff')
-histoplot(g_freq, g_cnt, g_cumul, g_bins, axis[0,1],
-          title='Grade Distribution', xlabel='Grade', ylabel='Fraction', y2label='Cumulative', color='green')
-histoplot(b_freq, b_cnt, b_cumul, b_bins, axis[1,0],
-          title='Bugs Distribution', xlabel='Number of bugs', ylabel='Fraction', y2label='Cumulative', color='red')
+#histoplot(a_freq, a_cnt, a_cumul, a_bins, axis[0,0], title='Number of answers distribution', xlabel='Number of answers', ylabel='Fraction', y2label='Cumulative', color='#35a7ff')
+histoplot(gc_freq, gc_cnt, gc_cumul, gc_bins, axis[0,0], title='Corrected Grade Distribution', xlabel='Corrected Grade', ylabel='Fraction', y2label='Cumulative', color='green')
+histoplot(g_freq, g_cnt, g_cumul, g_bins, axis[0,1], title='Grade Distribution', xlabel='Grade', ylabel='Fraction', y2label='Cumulative', color='green')
+histoplot(b_freq, b_cnt, b_cumul, b_bins, axis[1,0], title='Bugs Distribution', xlabel='Number of bugs', ylabel='Fraction', y2label='Cumulative', color='red')
+
 # final stats report
 textstr = '\n'.join((
-  r'GRADE avg   = %.2f' % (g_mu, ),
-  r'GRADE med   = %.2f' % (g_median, ),
-  r'GRADE sigma = %.2f' % (g_sigma, ),
+  r'GRADE avg   = %.2f'.format(g_mu, ),
+  r'GRADE med   = %.2f'.format(g_median, ),
+  r'GRADE sigma = %.2f'.format(g_sigma, ),
   r'',
-  r'ANS avg   = %.2f' % (a_mu, ),
-  r'ANS med   = %.2f' % (a_median, ),
-  r'ANS sigma = %.2f' % (a_sigma, ),
+  r'ANS avg   = %.2f'.format(a_mu, ),
+  r'ANS med   = %.2f'.format(a_median, ),
+  r'ANS sigma = %.2f'.format(a_sigma, ),
   r'',
-  r'BUGS avg   = %.2f' % (b_mu, ),
-  r'BUGS med   = %.2f' % (b_median, ),
-  r'BUGS sigma = %.2f' % (b_sigma, )
+  r'BUGS avg   = %.2f'.format(b_mu, ),
+  r'BUGS med   = %.2f'.format(b_median, ),
+  r'BUGS sigma = %.2f'.format(b_sigma, )
 ))
 axis[1,1].axis('off')
 axis[1,1].text(0.0, 1.0, textstr, transform=axis[1,1].transAxes, fontfamily='monospace', fontsize=14, verticalalignment='top')
