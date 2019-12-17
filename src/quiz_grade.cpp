@@ -219,13 +219,13 @@ int main(int argc, char ** argv) {
       exam.score = exam.pardon_score;
     }
     exam.grade_d = mapping(exam.pardon_score, score_min, score_max, grade_min, grade_max);
-    exam.grade = int(exam.grade_d + .5);   // +.5 to round to nearest integer
+    exam.grade = int(exam.grade_d + .5001);   // +.5 to round to nearest integer,
     if (verbose_correction) {
       if (exam.surname == target_student) {
         cout << "FINAL SCORE - " << fixed << setprecision(2) << setw(6) << exam.score << "\t"
           << fixed << setprecision(2) << setw(6) << exam.pardon_score << "\t"
           << fixed << setprecision(2) << setw(6) << exam.pardon_score - exam.score << "\t"
-          << " -> " << exam.grade << endl << endl;
+          << " -> " << exam.grade_d << " ~ " << exam.grade << endl << endl;
       }
     }
   }
