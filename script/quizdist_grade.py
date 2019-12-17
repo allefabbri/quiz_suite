@@ -114,17 +114,17 @@ histoplot(b_freq, b_cnt, b_cumul, b_bins, axis[1,0], title='Bugs Distribution', 
 
 # final stats report
 textstr = '\n'.join((
-  r'GRADE avg   = %.2f'.format(g_mu, ),
-  r'GRADE med   = %.2f'.format(g_median, ),
-  r'GRADE sigma = %.2f'.format(g_sigma, ),
-  r'',
-  r'ANS avg   = %.2f'.format(a_mu, ),
-  r'ANS med   = %.2f'.format(a_median, ),
-  r'ANS sigma = %.2f'.format(a_sigma, ),
-  r'',
-  r'BUGS avg   = %.2f'.format(b_mu, ),
-  r'BUGS med   = %.2f'.format(b_median, ),
-  r'BUGS sigma = %.2f'.format(b_sigma, )
+  'GRADE avg   = {:.2f}'.format(g_mu, ),
+  'GRADE med   = {:.2f}'.format(g_median, ),
+  'GRADE sigma = {:.2f}'.format(g_sigma, ),
+  '',
+  'ANS avg   = {:.2f}'.format(a_mu, ),
+  'ANS med   = {:.2f}'.format(a_median, ),
+  'ANS sigma = {:.2f}'.format(a_sigma, ),
+  '',
+  'BUGS avg   = {:.2f}'.format(b_mu, ),
+  'BUGS med   = {:.2f}'.format(b_median, ),
+  'BUGS sigma = {:.2f}'.format(b_sigma, )
 ))
 axis[1,1].axis('off')
 axis[1,1].text(0.0, 1.0, textstr, transform=axis[1,1].transAxes, fontfamily='monospace', fontsize=14, verticalalignment='top')
